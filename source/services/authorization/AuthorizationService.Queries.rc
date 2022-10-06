@@ -1,0 +1,2 @@
+#include "Persistence\Db\AuthorizationService.Persistence.Db.GetRoleByUserId.rcs"
+#include "Persistence\Db\AuthorizationService.Persistence.Db.SetRoleByUserId.rcs"

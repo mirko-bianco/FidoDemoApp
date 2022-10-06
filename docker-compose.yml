@@ -1,0 +1,104 @@
+version: "3.9"
+services:
+    redis:
+        build:
+            context: docker/redis
+            dockerfile: Dockerfile
+        image: mirkobianco/redis
+        ports:
+            - "6379:6379"
+    mysql:
+        environment: 
+            - MYSQL_ROOT_PASSWORD=mysecretpassword
+        cap_add:
+            - SYS_NICE  # CAP_SYS_NICE
+        build:
+            context: docker/mysql
+            dockerfile: Dockerfile
+        image: mirkobianco/mysql
+        ports:
+            - "3306:3306"
+    consul:
+        build:
+            context: docker/consul
+            dockerfile: Dockerfile
+        image: mirkobianco/consul
+        ports:
+            - "8500:8500"
+        expose:
+            - "8500"
+    fabio:
+        environment: 
+            - registry_consul_addr=consul:8500
+        build:
+            context: docker/fabio
+            dockerfile: Dockerfile
+        image: mirkobianco/fabio
+        ports:
+            - "8888:80"
+            - "9999:9999"
+            - "9998:9998"
+        depends_on:
+            - consul
+        expose: 
+            - "9999"
+    kvsetter:
+        build:
+            context: .
+            dockerfile: source/kvsetter/Dockerfile
+        image: mirkobianco/kvsetter
+        depends_on: 
+            - consul
+        links:
+            - "consul:consul"
+    authentication:
+        build:
+            context: .
+            dockerfile: source/services/authentication/Dockerfile
+        image: mirkobianco/authentication
+        ports:
+            - "8801:8801"
+        depends_on:
+            - consul
+            - redis
+            - fabio
+            - mysql
+        links:
+            - "consul:consul"
+            - "redis:redis"
+            - "mysql:mysql"
+            - "fabio:fabio"
+    authorization:
+        build:
+            context: .
+            dockerfile: source/services/authorization/Dockerfile
+        image: mirkobianco/authorization
+        ports:
+            - "8802:8802"
+        depends_on:
+            - consul
+            - redis
+            - fabio
+            - mysql
+        links:
+            - "consul:consul"
+            - "redis:redis"
+            - "mysql:mysql"
+            - "fabio:fabio"
+    users:
+        build:
+            context: .
+            dockerfile: source/services/users/Dockerfile
+        image: mirkobianco/users
+        ports:
+            - "8803:8803"
+        depends_on:
+            - consul
+            - redis
+            - fabio
+            - mysql
+        links:
+            - "consul:consul"
+            - "redis:redis"
+            - "mysql:mysql"
+            - "fabio:fabio"

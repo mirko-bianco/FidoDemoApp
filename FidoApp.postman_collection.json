@@ -1,0 +1,316 @@
+{
+	"info": {
+		"_postman_id": "b2b3c075-01bd-47c5-8f24-ce18e212942a",
+		"name": "FidoApp",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "V1",
+					"item": [
+						{
+							"name": "Signup",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"Username\": \"abc\",\"Password\": \"FidoApp@2021\", \"RepeatedPassword\": \"FidoApp@2021\"}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{Authentication}}/1/signup",
+									"host": [
+										"{{Authentication}}"
+									],
+									"path": [
+										"1",
+										"signup"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Login",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.globals.set(\"accesstoken\", pm.response.headers.get(\"Authorization\").replace(\"Bearer \", \"\"));\r",
+											"pm.globals.set(\"refreshtoken\",pm.response.headers.get(\"Refresh-Token\"));"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disabledSystemHeaders": {}
+							},
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"Username\": \"mirko\",\"Password\": \"bianco\"}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{Authentication}}/1/login",
+									"host": [
+										"{{Authentication}}"
+									],
+									"path": [
+										"1",
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Refresh Token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.globals.set(\"accesstoken\", pm.response.headers.get(\"Authorization\").replace(\"Bearer \", \"\"));\r",
+											"pm.globals.set(\"refreshtoken\",pm.response.headers.get(\"Refresh-Token\"));"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "refresh-token",
+										"value": "{{refreshtoken}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{Authentication}}/1/refresh",
+									"host": [
+										"{{Authentication}}"
+									],
+									"path": [
+										"1",
+										"refresh"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Change active state",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.globals.set(\"accesstoken\", pm.response.headers.get(\"Authorization\").replace(\"Bearer \", \"\"));\r",
+											"pm.globals.set(\"refreshtoken\",pm.response.headers.get(\"Refresh-Token\"));"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accesstoken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{Authentication}}/1/F8D87667-1E6E-498A-8847-FF680964A1D2/true",
+									"host": [
+										"{{Authentication}}"
+									],
+									"path": [
+										"1",
+										"F8D87667-1E6E-498A-8847-FF680964A1D2",
+										"true"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Health",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Authorization}}/health",
+							"host": [
+								"{{Authorization}}"
+							],
+							"path": [
+								"health"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Authorization",
+			"item": [
+				{
+					"name": "V1",
+					"item": [
+						{
+							"name": "Set Role",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.globals.set(\"accesstoken\", pm.response.headers.get(\"Authorization\").replace(\"Bearer \", \"\"));\r",
+											"pm.globals.set(\"refreshtoken\",pm.response.headers.get(\"Refresh-Token\"));"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accesstoken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{Authorization}}/1/role/F8D87667-1E6E-498A-8847-FF680964A1D2/user",
+									"host": [
+										"{{Authorization}}"
+									],
+									"path": [
+										"1",
+										"role",
+										"F8D87667-1E6E-498A-8847-FF680964A1D2",
+										"user"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Role",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.globals.set(\"accesstoken\", pm.response.headers.get(\"Authorization\").replace(\"Bearer \", \"\"));\r",
+											"pm.globals.set(\"refreshtoken\",pm.response.headers.get(\"Refresh-Token\"));"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{accesstoken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{Authorization}}/1/role",
+									"host": [
+										"{{Authorization}}"
+									],
+									"path": [
+										"1",
+										"role"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Health",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Authorization}}/health",
+							"host": [
+								"{{Authorization}}"
+							],
+							"path": [
+								"health"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Health",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

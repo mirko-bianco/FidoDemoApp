@@ -1,0 +1,4 @@
+SQL_Users_Insert RCDATA "Queries\SQL_USERS_Insert.sql"
+SQL_Users_Delete RCDATA "Queries\SQL_Users_Delete.sql"
+SQL_Users_GetAll RCDATA "Queries\SQL_Users_GetAll.sql"
+SQL_Users_Count RCDATA "Queries\SQL_Users_Count.sql"

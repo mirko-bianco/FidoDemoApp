@@ -1,0 +1,65 @@
+package FidoAppShared;
+
+{$R *.res}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO OFF}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION OFF}
+{$OVERFLOWCHECKS ON}
+{$RANGECHECKS ON}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES ON}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DEFINE DEBUG}
+{$ENDIF IMPLICITBUILDING}
+{$RUNONLY}
+{$IMPLICITBUILD ON}
+
+requires
+  rtl,
+  dbrtl,
+  RESTComponents,
+  Spring.Base,
+  Spring.Core,
+  FidoCore,
+  FidoGui;
+
+contains
+  FidoApp.Constants in 'FidoApp.Constants.pas',
+  FidoApp.DI.Registration in 'FidoApp.DI.Registration.pas',
+  FidoApp.Messages in 'FidoApp.Messages.pas',
+  FidoApp.Types in 'FidoApp.Types.pas',
+  FidoApp.Utils in 'FidoApp.Utils.pas',
+  FidoApp.Domain.Usecases.RefreshToken.Intf in 'Domain\UseCases\FidoApp.Domain.Usecases.RefreshToken.Intf.pas',
+  FidoApp.Domain.UseCases.RefreshToken in 'Domain\UseCases\FidoApp.Domain.UseCases.RefreshToken.pas',
+  FidoApp.Domain.Repositories.Authentication.Intf in 'Domain\FidoApp.Domain.Repositories.Authentication.Intf.pas',
+  FidoApp.Domain.ClientTokensCache.Intf in 'Domain\ClientTokensCache\FidoApp.Domain.ClientTokensCache.Intf.pas',
+  FidoApp.Domain.ClientTokensCache in 'Domain\ClientTokensCache\FidoApp.Domain.ClientTokensCache.pas',
+  FidoApp.Persistence.Repositories.Authentication in 'Persistence\Repositories\FidoApp.Persistence.Repositories.Authentication.pas',
+  FidoApp.Persistence.Repositories.DatabaseMigrations in 'Persistence\Repositories\FidoApp.Persistence.Repositories.DatabaseMigrations.pas',
+  FidoApp.Presentation.Controllers.ApiServers.Health in 'Presentation\Controllers\ApiServers\FidoApp.Presentation.Controllers.ApiServers.Health.pas',
+  FidoApp.Persistence.Gateways.Authentication.Intf in 'Persistence\Gateways\FidoApp.Persistence.Gateways.Authentication.Intf.pas',
+  FidoApp.Persistence.Gateways.Authentication in 'Persistence\Gateways\FidoApp.Persistence.Gateways.Authentication.pas',
+  FidoApp.Persistence.ApiClients.Authentication.V1.Intf in 'Persistence\ApiClients\FidoApp.Persistence.ApiClients.Authentication.V1.Intf.pas',
+  FidoApp.Persistence.ApiClients.Authorization.V1.Intf in 'Persistence\ApiClients\FidoApp.Persistence.ApiClients.Authorization.V1.Intf.pas',
+  FidoApp.Persistence.ApiClients.Configuration.Tokens in 'Persistence\ApiClients\FidoApp.Persistence.ApiClients.Configuration.Tokens.pas',
+  FidoApp.Persistence.ApiClients.Users.V1.Intf in 'Persistence\ApiClients\FidoApp.Persistence.ApiClients.Users.V1.Intf.pas',
+  FidoApp.Persistence.Gateways.Authorization.Intf in 'Persistence\Gateways\FidoApp.Persistence.Gateways.Authorization.Intf.pas',
+  FidoApp.Persistence.Gateways.Authorization in 'Persistence\Gateways\FidoApp.Persistence.Gateways.Authorization.pas',
+  FidoApp.Persistence.Gateways.Users.Intf in 'Persistence\Gateways\FidoApp.Persistence.Gateways.Users.Intf.pas',
+  FidoApp.Persistence.Gateways.Users in 'Persistence\Gateways\FidoApp.Persistence.Gateways.Users.pas';
+
+end.

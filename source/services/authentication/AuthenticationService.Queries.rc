@@ -1,0 +1,4 @@
+#include "Persistence/Db/AuthenticationService.Persistence.Db.Login.rcs"
+#include "Persistence/Db/AuthenticationService.Persistence.Db.Signup.rcs"
+#include "Persistence/Db/AuthenticationService.Persistence.Db.ChangeActiveStatus.rcs"
+#include "Persistence/Db/AuthenticationService.Persistence.Db.Remove.rcs"

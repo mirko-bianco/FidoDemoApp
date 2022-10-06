@@ -1,0 +1,168 @@
+object LoginView: TLoginView
+  Left = 0
+  Top = 0
+  BorderIcons = []
+  BorderStyle = Single
+  Caption = 'Please login'
+  ClientHeight = 207
+  ClientWidth = 360
+  FormStyle = StayOnTop
+  Visible = True
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnActivate = FormActivate
+  OnClose = FormClose
+  DesignerMasterStyle = 0
+  object edtRepeatPassword: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    Anchors = [akLeft, akTop, akRight]
+    TabOrder = 2
+    Password = True
+    Position.X = 136.000000000000000000
+    Position.Y = 76.000000000000000000
+    Size.Width = 208.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TextPrompt = 'Please repeat your password'
+  end
+  object lblUsername: TLabel
+    Position.X = 16.000000000000000000
+    Position.Y = 16.000000000000000000
+    Size.Width = 112.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'Username:'
+    TabOrder = 11
+    TabStop = False
+  end
+  object lblPassword: TLabel
+    Position.X = 16.000000000000000000
+    Position.Y = 46.000000000000000000
+    Size.Width = 112.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'Password:'
+    TabOrder = 5
+    TabStop = False
+  end
+  object edtUsername: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    Anchors = [akLeft, akTop, akRight]
+    TabOrder = 0
+    Position.X = 136.000000000000000000
+    Position.Y = 16.000000000000000000
+    Size.Width = 208.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TextPrompt = 'Please type your username'
+  end
+  object btnLogin: TButton
+    Anchors = [akBottom]
+    StyledSettings = [Size, Style, FontColor]
+    Position.X = 303.000000000000000000
+    Position.Y = 170.000000000000000000
+    Size.Width = 41.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 7
+    Text = 'Login'
+  end
+  object BtnBack: TButton
+    Action = actClose
+    Anchors = [akBottom]
+    Cancel = True
+    Enabled = True
+    StyledSettings = [Size, Style, FontColor]
+    ImageIndex = -1
+    ModalResult = 2
+    Position.X = 254.000000000000000000
+    Position.Y = 170.000000000000000000
+    Size.Width = 41.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 8
+    Text = 'Close'
+  end
+  object cbSignup: TCheckBox
+    Anchors = [akBottom]
+    Position.X = 16.000000000000000000
+    Position.Y = 173.000000000000000000
+    StyleLookup = 'cbSignupStyle1'
+    TabOrder = 13
+    Text = 'Signup'
+  end
+  object lblRepeatPassword: TLabel
+    Position.X = 16.000000000000000000
+    Position.Y = 76.000000000000000000
+    Size.Width = 112.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'Repeat Password:'
+    TabOrder = 3
+    TabStop = False
+  end
+  object edtPassword: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    Anchors = [akLeft, akTop, akRight]
+    TabOrder = 1
+    Password = True
+    Position.X = 136.000000000000000000
+    Position.Y = 46.000000000000000000
+    Size.Width = 208.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TextPrompt = 'Please type your password'
+  end
+  object lblFirstName: TLabel
+    Position.X = 16.000000000000000000
+    Position.Y = 106.000000000000000000
+    Size.Width = 112.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'First name:'
+    TabOrder = 10
+    TabStop = False
+  end
+  object edtFirstName: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    Anchors = [akLeft, akTop, akRight]
+    TabOrder = 4
+    Position.X = 136.000000000000000000
+    Position.Y = 106.000000000000000000
+    Size.Width = 208.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TextPrompt = 'Please type your first name'
+  end
+  object lblLastName: TLabel
+    Position.X = 16.000000000000000000
+    Position.Y = 137.000000000000000000
+    Size.Width = 112.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'Last name:'
+    TabOrder = 9
+    TabStop = False
+  end
+  object edtLastName: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    Anchors = [akLeft, akTop, akRight]
+    TabOrder = 6
+    Position.X = 136.000000000000000000
+    Position.Y = 137.000000000000000000
+    Size.Width = 208.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TextPrompt = 'Please type your last name'
+  end
+  object alLogin: TActionList
+    Left = 217
+    Top = 6
+    object actClose: TAction
+      Category = 'Window'
+      Text = 'actClose'
+      OnExecute = actCloseExecute
+    end
+  end
+end

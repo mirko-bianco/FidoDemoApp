@@ -1,0 +1,144 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{1E8E1A87-92FF-4920-A959-18B284BEE76D}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="..\FidoLib\source\FidoCore.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="..\FidoLib\source\FidoRedis.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="..\FidoLib\tests\FidoLibTests.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="source\shared\FidoAppShared.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="source\kvsetter\KVSetter.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="source\services\authentication\AuthenticationService.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="source\services\authorization\AuthorizationService.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="source\services\users\UsersService.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="source\client\ClientApp.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="tests\Tests.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="FidoCore">
+        <MSBuild Projects="..\FidoLib\source\FidoCore.dproj"/>
+    </Target>
+    <Target Name="FidoCore:Clean">
+        <MSBuild Projects="..\FidoLib\source\FidoCore.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="FidoCore:Make">
+        <MSBuild Projects="..\FidoLib\source\FidoCore.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="FidoRedis">
+        <MSBuild Projects="..\FidoLib\source\FidoRedis.dproj"/>
+    </Target>
+    <Target Name="FidoRedis:Clean">
+        <MSBuild Projects="..\FidoLib\source\FidoRedis.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="FidoRedis:Make">
+        <MSBuild Projects="..\FidoLib\source\FidoRedis.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="FidoLibTests">
+        <MSBuild Projects="..\FidoLib\tests\FidoLibTests.dproj"/>
+    </Target>
+    <Target Name="FidoLibTests:Clean">
+        <MSBuild Projects="..\FidoLib\tests\FidoLibTests.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="FidoLibTests:Make">
+        <MSBuild Projects="..\FidoLib\tests\FidoLibTests.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="FidoAppShared">
+        <MSBuild Projects="source\shared\FidoAppShared.dproj"/>
+    </Target>
+    <Target Name="FidoAppShared:Clean">
+        <MSBuild Projects="source\shared\FidoAppShared.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="FidoAppShared:Make">
+        <MSBuild Projects="source\shared\FidoAppShared.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="KVSetter">
+        <MSBuild Projects="source\kvsetter\KVSetter.dproj"/>
+    </Target>
+    <Target Name="KVSetter:Clean">
+        <MSBuild Projects="source\kvsetter\KVSetter.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="KVSetter:Make">
+        <MSBuild Projects="source\kvsetter\KVSetter.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="AuthenticationService">
+        <MSBuild Projects="source\services\authentication\AuthenticationService.dproj"/>
+    </Target>
+    <Target Name="AuthenticationService:Clean">
+        <MSBuild Projects="source\services\authentication\AuthenticationService.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="AuthenticationService:Make">
+        <MSBuild Projects="source\services\authentication\AuthenticationService.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="AuthorizationService">
+        <MSBuild Projects="source\services\authorization\AuthorizationService.dproj"/>
+    </Target>
+    <Target Name="AuthorizationService:Clean">
+        <MSBuild Projects="source\services\authorization\AuthorizationService.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="AuthorizationService:Make">
+        <MSBuild Projects="source\services\authorization\AuthorizationService.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="UsersService">
+        <MSBuild Projects="source\services\users\UsersService.dproj"/>
+    </Target>
+    <Target Name="UsersService:Clean">
+        <MSBuild Projects="source\services\users\UsersService.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="UsersService:Make">
+        <MSBuild Projects="source\services\users\UsersService.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ClientApp">
+        <MSBuild Projects="source\client\ClientApp.dproj"/>
+    </Target>
+    <Target Name="ClientApp:Clean">
+        <MSBuild Projects="source\client\ClientApp.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ClientApp:Make">
+        <MSBuild Projects="source\client\ClientApp.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Tests">
+        <MSBuild Projects="tests\Tests.dproj"/>
+    </Target>
+    <Target Name="Tests:Clean">
+        <MSBuild Projects="tests\Tests.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Tests:Make">
+        <MSBuild Projects="tests\Tests.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="FidoCore;FidoRedis;FidoLibTests;FidoAppShared;KVSetter;AuthenticationService;AuthorizationService;UsersService;ClientApp;Tests"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="FidoCore:Clean;FidoRedis:Clean;FidoLibTests:Clean;FidoAppShared:Clean;KVSetter:Clean;AuthenticationService:Clean;AuthorizationService:Clean;UsersService:Clean;ClientApp:Clean;Tests:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="FidoCore:Make;FidoRedis:Make;FidoLibTests:Make;FidoAppShared:Make;KVSetter:Make;AuthenticationService:Make;AuthorizationService:Make;UsersService:Make;ClientApp:Make;Tests:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

@@ -1,0 +1,59 @@
+object MainView: TMainView
+  Left = 0
+  Top = 0
+  Caption = 'Main'
+  ClientHeight = 519
+  ClientWidth = 1082
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  DesignerMasterStyle = 0
+  object MainToolbar: TToolBar
+    Size.Width = 1082.000000000000000000
+    Size.Height = 48.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    object btnLog: TSpeedButton
+      Align = Right
+      StyledSettings = [Size, FontColor]
+      Padding.Left = 5.000000000000000000
+      Padding.Top = 5.000000000000000000
+      Padding.Right = 5.000000000000000000
+      Padding.Bottom = 5.000000000000000000
+      Margins.Right = 5.000000000000000000
+      Position.X = 1037.000000000000000000
+      Size.Width = 40.000000000000000000
+      Size.Height = 48.000000000000000000
+      Size.PlatformDefault = False
+      Text = 'Login'
+    end
+    object btnUsers: TSpeedButton
+      Align = Left
+      StyledSettings = [Size, FontColor]
+      Padding.Left = 5.000000000000000000
+      Padding.Top = 5.000000000000000000
+      Padding.Right = 5.000000000000000000
+      Padding.Bottom = 5.000000000000000000
+      Margins.Right = 5.000000000000000000
+      Size.Width = 40.000000000000000000
+      Size.Height = 48.000000000000000000
+      Size.PlatformDefault = False
+      Text = 'Users'
+    end
+  end
+  object Panel1: TPanel
+    Align = Client
+    Size.Width = 1082.000000000000000000
+    Size.Height = 471.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    object StatusBar1: TStatusBar
+      Position.Y = 449.000000000000000000
+      ShowSizeGrip = True
+      Size.Width = 1082.000000000000000000
+      Size.Height = 22.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+    end
+  end
+end

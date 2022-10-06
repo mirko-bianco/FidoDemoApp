@@ -1,0 +1,40 @@
+{
+	"id": "a86c036c-e6c5-4ea6-8fa2-2b0916bb0458",
+	"values": [
+		{
+			"key": "token",
+			"value": "",
+			"enabled": true
+		},
+		{
+			"key": "Authentication",
+			"value": "http://127.0.0.1:8080/api",
+			"enabled": true
+		},
+		{
+			"key": "Authorization",
+			"value": "http://127.0.0.1:8081/api",
+			"enabled": true
+		},
+		{
+			"key": "accesstoken",
+			"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzUxMiJ9.eyJpc3MiOiJGaWRvIEFwcCBleGFtcGxlIiwiaWF0IjoxNjQ1NzczNzcxLCJleHAiOjE2NDYyOTIxNzEsInR5cGUiOiJhY2Nlc3MiLCJ1c2VyaWQiOiJ7MTlGODczQUEtOThDQS00NjI0LThFMTMtNDQ0NkIwMDc4QzdCfSIsInJvbGUiOiJ1c2VyIn0.IHPYsJQLGaeVlDZ9J_m-htcuG5B_ZcSKy9AtiuPcgE2rSUgTbqsr39HzNS9uCTKUGJB8UODZZkUhinSua8B6x0MRd5qYKh0l0MBReya-L87rsUdHQCs0GbunXuG82Vlco_H9ExtoZHctT0A0He97Q3lF233yc-qzTjKn7PEnLWQ92PKlbHlvBUw_aOnCJQnbMOcz4Ut4A9uMCvZU1WRgi1q1d-4Vp78lsV57EN5nH6SLz3RVLhWYE7i6GGDVpYj836BSMXBmmRS0a1XgDuCy_M3Roqeg7ZUA95DUti92o1VXGFRu2GqSZxpI0mkRXGZrwt_5ItfAGOAX5UL01II4k9uD1DflOkxBWOa0uVBZhxWsvJnjXjvefhFOIaMu5dA4wfizzDdvp3lnGt-d-bEVS4kubiJxurOUyVhN_rR9CtxJ4YLhkrgp_Nc1j_KNz25INBG-zAkyLRCf2GV-D2WMrqAS_PMpYkLNaFtYBoVwhWiHVbhZYSxAIKFiRPPfksq9oJjWC7upfJXH2kD8A8FW5aLqo6I92HJIDjNUSrb0gM8Cyrv2_uKuOsfyjgjA58iurjTstTQpyaRyehG6SSPNS8chRQQv-_7tywrT2RTCOGhEeWoiCZ-eL1p1o-Tn53iQ5w3JRmh_V_V_fk2pybHYAx4mRkMR3kwNuvme_ADHYTc",
+			"enabled": true
+		},
+		{
+			"key": "refreshtoken",
+			"value": null,
+			"enabled": true
+		},
+		{
+			"key": "Users",
+			"value": "http://127.0.0.1:9999/users/api",
+			"type": "default",
+			"enabled": true
+		}
+	],
+	"name": "Globals",
+	"_postman_variable_scope": "globals",
+	"_postman_exported_at": "2022-03-09T11:40:26.244Z",
+	"_postman_exported_using": "Postman/9.14.12"
+}

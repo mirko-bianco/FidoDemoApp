@@ -1,0 +1,41 @@
+unit UsersService.Persistence.Gateways.Add;
+
+interface
+
+uses
+  Fido.Functional.Base;
+
+type
+  TInsertCallData = record
+  private
+    FId: string;
+    FFirstName: string;
+    FLastName: string;
+  public
+    constructor Create(const Id: string; const FirstName: string; const LastName: string);
+
+    property Id: string read FId;
+    property FirstName: string read FFirstName;
+    property LastName: string read FLastName;
+  end;
+
+  IInsertGateway = interface(IInvokable)
+
+    function Execute(const Data: TInsertCallData): IFunctor<Integer>;
+  end;
+
+implementation
+
+{ TInsertCallData }
+
+constructor TInsertCallData.Create(
+  const Id: string;
+  const FirstName: string;
+  const LastName: string);
+begin
+  FId := Id;
+  FFirstName := FirstName;
+  FLastName := LastName;
+end;
+
+end.
