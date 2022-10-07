@@ -1,4 +1,4 @@
-FROM mirkobianco/delphimysql:latest 
+FROM mirkobianco/delphimysql
 RUN mkdir -p /app
 COPY built/Linux64/Release/services/authentication/AuthenticationService /app/service
 COPY artifacts/AuthenticationService.ini /app/service.ini

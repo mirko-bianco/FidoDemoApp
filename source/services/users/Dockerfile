@@ -1,4 +1,4 @@
-FROM mirkobianco/delphimysql:latest
+FROM mirkobianco/delphimysql
 RUN mkdir -p /app
 COPY built/Linux64/Release/services/users/UsersService /app/service
 COPY artifacts/UsersService.ini /app/service.ini
