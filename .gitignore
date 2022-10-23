@@ -18,3 +18,11 @@ tests/dunitx-results.xml
 *.bpi
 *.lnk
 *.deployproj
+CI/Delphi-Code-Coverage-Debug.log
+CI/allsourcedirs.txt
+CI/allunitstotest.txt
+CI/BuildClient.cmd
+CI/BuildServices.cmd
+CI/BuildTests.cmd
+Delphi-Code-Coverage-Debug.log
+CI/BuildUtilities.cmd
