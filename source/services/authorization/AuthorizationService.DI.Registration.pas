@@ -105,7 +105,7 @@ begin
 
   PublicKeyContent := ConsulKVStore.Get('public.key', Constants.TIMEOUT);
 
-  Container.RegisterType<TFireDacConnections>.DelegateTo(
+  Container.RegisterType<TFireDacConnections>(
     function: TFireDacConnections
     begin
       Result := TFireDacPerThreadConnections.Create(FireDacDatabaseParams);
@@ -114,14 +114,14 @@ begin
   Container.RegisterType<IStatementExecutor, TFireDacStatementExecutor>.AsSingletonPerThread();
 
   Container.RegisterType<IDatabaseScriptRunner, TFireDacDatabaseScriptRunner>;
-  Container.RegisterType<IDatabaseMigrationsRepository>.DelegateTo(
+  Container.RegisterType<IDatabaseMigrationsRepository>(
     function: IDatabaseMigrationsRepository
     begin
       Result := TDatabaseMigrationsRepository.Create(
         Container.Resolve<TFireDacConnections>,
         DATABASENAME);
     end);
-  Container.RegisterType<IDatabaseMigrationsModel>.DelegateTo(
+  Container.RegisterType<IDatabaseMigrationsModel>(
     function: IDatabaseMigrationsModel
     begin
       Result := TDatabaseMigrationsModel.Create(
@@ -130,7 +130,7 @@ begin
         'DbMigrations');
     end);
 
-  Container.RegisterType<IApiServer>.DelegateTo(
+  Container.RegisterType<IApiServer>(
     function: IApiServer
     begin
       Result := TConsulAwareApiServer.Create(
@@ -144,13 +144,13 @@ begin
         Constants.TIMEOUT);
     end);
 
-  Container.RegisterType<ILogAppender>.DelegateTo(
+  Container.RegisterType<ILogAppender>(
     function: ILogAppender
     begin
       Result := TPermanentFileLogAppender.Create(IniFile.Value.ReadString('Log', 'Filename', Utils.Files.GetLogFilename));
     end);
 
-  Container.RegisterType<ILogger>.DelegateTo(
+  Container.RegisterType<ILogger>(
     function: ILogger
     begin
       Result := TLogger.Create(TLoggerController.Create([Container.Resolve<ILogAppender>]));

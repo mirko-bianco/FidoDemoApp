@@ -20,7 +20,7 @@ implementation
 
 procedure DIRegistration(const Container: TContainer);
 begin
-  Container.RegisterType<IAddRoleToTokenUseCase>.DelegateTo(
+  Container.RegisterType<IAddRoleToTokenUseCase>(
     function: IAddRoleToTokenUseCase
     begin
       Result := TAddRoleToTokenUseCase.Create(

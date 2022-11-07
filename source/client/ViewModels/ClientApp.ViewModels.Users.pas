@@ -188,7 +188,7 @@ begin
   FItemsPerPage := Box<Integer>.Setup(20);
   FTotalCount := Box<Integer>.Setup(0);
   FOrderBy := Box<TGetAllUsersOrderBy>.Setup(TGetAllUsersOrderBy.FirstNameAsc);
-  FUsers := Box<IReadonlyList<IUser>>.Setup(TCollections.CreateList<IUser>.AsReadOnlyList);
+  FUsers := Box<IReadonlyList<IUser>>.Setup(TCollections.CreateList<IUser>.AsReadOnly);
 end;
 
 function TUsersViewModel.DoGetAll(const Params: TGetAllInputParams): Context<IGetAllUsersV1Result>;

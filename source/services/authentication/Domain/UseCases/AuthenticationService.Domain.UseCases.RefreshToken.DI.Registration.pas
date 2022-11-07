@@ -23,7 +23,7 @@ implementation
 
 procedure DIRegistration(const Container: TContainer; const PublicKeyContent: string);
 begin
-  Container.RegisterType<IRefreshTokenUseCase>.DelegateTo(
+  Container.RegisterType<IRefreshTokenUseCase>(
     function: IRefreshTokenUseCase
     begin
       Result := TRefreshTokenUseCase.Create(

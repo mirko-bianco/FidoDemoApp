@@ -76,13 +76,13 @@ begin
   Container.Build;
   KVStore := Container.Resolve<IKVStore>;
 
-  Container.RegisterType<ILogAppender>.DelegateTo(
+  Container.RegisterType<ILogAppender>(
     function: ILogAppender
     begin
       Result := TPermanentFileLogAppender.Create(IniFile.ReadString('Log', 'Filename', Utils.Files.GetLogFilename), 'yyyy-mm-dd hh:nn:ss:zzz');
     end);
 
-  Container.RegisterType<ILogger>.DelegateTo(
+  Container.RegisterType<ILogger>(
     function: ILogger
     begin
       Result := TLogger.Create(TLoggerController.Create([Container.Resolve<ILogAppender>]));
@@ -111,7 +111,7 @@ begin
   Container.RegisterType<ILoginView, TLoginView>;
   Container.RegisterType<IUsersViewModel, TUsersViewModel>;
   Container.RegisterType<IMainViewModel, TMainViewModel>;
-  Container.RegisterType<TMainView, TMainView>.DelegateTo(
+  Container.RegisterType<TMainView, TMainView>(
     function: TMainView
     begin
       if Assigned(MainView) then

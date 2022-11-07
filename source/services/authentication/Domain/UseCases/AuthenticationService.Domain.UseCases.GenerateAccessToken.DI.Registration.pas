@@ -23,7 +23,7 @@ implementation
 
 procedure DIRegistration(const Container: TContainer; const PublicKeyContent: string; const PrivateKeyContent: string);
 begin
-  Container.RegisterType<IGenerateAccessTokenUseCase>.DelegateTo(
+  Container.RegisterType<IGenerateAccessTokenUseCase>(
     function: IGenerateAccessTokenUseCase
     begin
       Result := TGenerateAccessTokenUseCase.Create(

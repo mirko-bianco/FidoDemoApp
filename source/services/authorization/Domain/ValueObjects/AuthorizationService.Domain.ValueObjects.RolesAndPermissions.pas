@@ -47,20 +47,20 @@ begin
   AvailablePermissions.Add(Permission.CanSetUserRole);
   AvailablePermissions.Add(Permission.CanGetAllUSers);
 
-  FAvailablePermissions := AvailablePermissions.AsReadOnlyList;
+  FAvailablePermissions := AvailablePermissions.AsReadOnly;
 
   AvailableRoles := TCollections.CreateDictionary<string, IPermissions>(TStringComparer.Ordinal);
 
   User := TCollections.CreateList<Permission>;
 
-  AvailableRoles[Constants.ROLE_USER] := User.AsReadonlyList;
+  AvailableRoles[Constants.ROLE_USER] := User.AsReadonly;
 
   Admin := TCollections.CreateList<Permission>();
   Admin.AddRange(FAvailablePermissions);
 
-  AvailableRoles[Constants.ROLE_ADMIN] := Admin.AsReadonlyList;
+  AvailableRoles[Constants.ROLE_ADMIN] := Admin.AsReadonly;
 
-  FAvailableRoles := AvailableRoles.AsReadOnlyDictionary;
+  FAvailableRoles := AvailableRoles.AsReadOnly;
 end;
 
 end.

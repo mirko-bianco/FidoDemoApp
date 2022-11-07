@@ -146,7 +146,7 @@ begin
   PublicKeyContent := ConsulKVStore.Get('public.key', Constants.TIMEOUT);
   PrivateKeyContent := ConsulKVStore.Get('private.key', Constants.TIMEOUT);
 
-  Container.RegisterType<TFireDacConnections>.DelegateTo(
+  Container.RegisterType<TFireDacConnections>(
     function: TFireDacConnections
     begin
       Result := TFireDacPerThreadConnections.Create(FireDacDatabaseParams);
@@ -155,14 +155,14 @@ begin
   Container.RegisterType<IStatementExecutor, TFireDacStatementExecutor>;
 
   Container.RegisterType<IDatabaseScriptRunner, TFireDacDatabaseScriptRunner>;
-  Container.RegisterType<IDatabaseMigrationsRepository>.DelegateTo(
+  Container.RegisterType<IDatabaseMigrationsRepository>(
     function: IDatabaseMigrationsRepository
     begin
       Result := TDatabaseMigrationsRepository.Create(
         Container.Resolve<TFireDacConnections>,
         DATABASENAME);
     end);
-  Container.RegisterType<IDatabaseMigrationsModel>.DelegateTo(
+  Container.RegisterType<IDatabaseMigrationsModel>(
     function: IDatabaseMigrationsModel
     begin
       Result := TDatabaseMigrationsModel.Create(
@@ -175,7 +175,7 @@ begin
   ServerMaxConnections := IniFile.ReadInteger('Server', 'MaxConnections', 50);
   ServerServiceName := IniFile.ReadString('Server', 'ServiceName', 'AuthenticationService');
 
-  Container.RegisterType<IApiServer>.DelegateTo(
+  Container.RegisterType<IApiServer>(
     function: IApiServer
     begin
       Result := TConsulAwareApiServer.Create(
@@ -190,13 +190,13 @@ begin
     end);
 
   LogFilename := IniFile.ReadString('Log', 'Filename', Utils.Files.GetLogFilename);
-  Container.RegisterType<ILogAppender>.DelegateTo(
+  Container.RegisterType<ILogAppender>(
     function: ILogAppender
     begin
       Result := TPermanentFileLogAppender.Create(LogFilename);
     end);
 
-  Container.RegisterType<ILogger>.DelegateTo(
+  Container.RegisterType<ILogger>(
     function: ILogger
     begin
       Result := TLogger.Create(TLoggerController.Create([Container.Resolve<ILogAppender>]));
@@ -206,7 +206,7 @@ begin
 
   FidoApp.DI.Registration.RegisterAuthorizationApiV1(Container, ConsulKVStore);
 
-  Container.RegisterType<IRedisClient>.DelegateTo(
+  Container.RegisterType<IRedisClient>(
     function: IRedisClient
     begin
       Result := TRedisClient.Create(
@@ -218,7 +218,7 @@ begin
   Container.RegisterType<IFidoRedisClient, TFidoRedisClient>;
   Container.RegisterFactory<IFidoRedisClientFactory>;
 
-  Container.RegisterType<IServerTokensCache>.DelegateTo(
+  Container.RegisterType<IServerTokensCache>(
     function: IServerTokensCache
     begin
       Result := TKVStoreServerTokensCache.Create(

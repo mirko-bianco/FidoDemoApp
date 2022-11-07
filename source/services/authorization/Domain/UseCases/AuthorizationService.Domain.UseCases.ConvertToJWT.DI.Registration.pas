@@ -20,7 +20,7 @@ implementation
 
 procedure DIRegistration(const Container: TContainer; const PublicKeyContent: string);
 begin
-  Container.RegisterType<IConvertToJWTUseCase>.DelegateTo(
+  Container.RegisterType<IConvertToJWTUseCase>(
     function: IConvertToJWTUseCase
     begin
       Result := TConvertToJWTUseCase.Create(

@@ -128,7 +128,7 @@ begin
   FireDacDatabaseParams.Value.Values['Server'] := ConsulKVStore.Get('database.server', Constants.TIMEOUT);
   FireDacDatabaseParams.Value.Values['Port'] := ConsulKVStore.Get('database.port', Constants.TIMEOUT);
 
-  Container.RegisterType<TFireDacConnections>.DelegateTo(
+  Container.RegisterType<TFireDacConnections>(
     function: TFireDacConnections
     begin
       Result := TFireDacPerThreadConnections.Create(FireDacDatabaseParams);
@@ -137,14 +137,14 @@ begin
   Container.RegisterType<IStatementExecutor, TFireDacStatementExecutor>;
 
   Container.RegisterType<IDatabaseScriptRunner, TFireDacDatabaseScriptRunner>;
-  Container.RegisterType<IDatabaseMigrationsRepository>.DelegateTo(
+  Container.RegisterType<IDatabaseMigrationsRepository>(
     function: IDatabaseMigrationsRepository
     begin
       Result := TDatabaseMigrationsRepository.Create(
         Container.Resolve<TFireDacConnections>,
         DATABASENAME);
     end);
-  Container.RegisterType<IDatabaseMigrationsModel>.DelegateTo(
+  Container.RegisterType<IDatabaseMigrationsModel>(
     function: IDatabaseMigrationsModel
     begin
       Result := TDatabaseMigrationsModel.Create(
@@ -155,7 +155,7 @@ begin
 
   Container.RegisterType<IJWTManager, TJWTManager>;
 
-  Container.RegisterType<IApiServer>.DelegateTo(
+  Container.RegisterType<IApiServer>(
     function: IApiServer
     begin
       Result := TConsulAwareApiServer.Create(
@@ -169,13 +169,13 @@ begin
         Constants.TIMEOUT);
     end);
 
-  Container.RegisterType<ILogAppender>.DelegateTo(
+  Container.RegisterType<ILogAppender>(
     function: ILogAppender
     begin
       Result := TPermanentFileLogAppender.Create(IniFile.Value.ReadString('Log', 'Filename', Utils.Files.GetLogFilename));
     end);
 
-  Container.RegisterType<ILogger>.DelegateTo(
+  Container.RegisterType<ILogger>(
     function: ILogger
     begin
       Result := TLogger.Create(TLoggerController.Create([Container.Resolve<ILogAppender>]));
@@ -184,7 +184,7 @@ begin
   RedisHost := ConsulKVStore.Get('redis.host', Constants.TIMEOUT);
   RedisPort := JSONKVStore.Get<Integer>(ConsulKVStore, 'redis.port', Constants.TIMEOUT);
 
-  Container.RegisterType<IRedisClient>.DelegateTo(
+  Container.RegisterType<IRedisClient>(
     function: IRedisClient
     begin
       Result := TRedisClient.Create(RedisHost, RedisPort);

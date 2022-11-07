@@ -137,7 +137,7 @@ begin
   HeaderParams[Constants.HEADER_AUTHORIZATION] := Format('Bearer %s', [MockUtils.SomeString]);
   HeaderParams[Constants.HEADER_REFRESHTOKEN] := MockUtils.SomeString;
   ApiRequest := Mock<IHttpRequest>.Create;
-  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnlyDictionary).When.HeaderParams;
+  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnly).When.HeaderParams;
 
   Assert.WillNotRaiseAny(
     procedure
@@ -174,7 +174,7 @@ begin
   HeaderParams[Constants.HEADER_AUTHORIZATION] := Format('somethingelse %s', [MockUtils.SomeString]);
   HeaderParams[Constants.HEADER_REFRESHTOKEN] := MockUtils.SomeString;
   ApiRequest := Mock<IHttpRequest>.Create;
-  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnlyDictionary).When.HeaderParams;
+  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnly).When.HeaderParams;
 
   Assert.WillNotRaiseAny(
     procedure
@@ -211,7 +211,7 @@ begin
   HeaderParams['Authorization'] := Format('Bearer %s', [MockUtils.SomeString]);
   HeaderParams[Constants.HEADER_REFRESHTOKEN] := MockUtils.SomeString;
   ApiRequest := Mock<IHttpRequest>.Create;
-  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnlyDictionary).When.HeaderParams;
+  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnly).When.HeaderParams;
 
   Assert.WillNotRaiseAny(
     procedure
@@ -247,7 +247,7 @@ begin
   HeaderParams['Authorization'] := Format('Bearer %s', [MockUtils.SomeString]);
   HeaderParams[Constants.HEADER_REFRESHTOKEN] := MockUtils.SomeString;
   ApiRequest := Mock<IHttpRequest>.Create;
-  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnlyDictionary).When.HeaderParams;
+  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnly).When.HeaderParams;
 
   Assert.WillNotRaiseAny(
     procedure
@@ -293,7 +293,7 @@ begin
   HeaderParams['Authorization'] := Format('Bearer %s', [AccessCompactToken]);
   HeaderParams[Constants.HEADER_REFRESHTOKEN] := RefreshCompactToken;
   ApiRequest := Mock<IHttpRequest>.Create;
-  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnlyDictionary).When.HeaderParams;
+  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnly).When.HeaderParams;
 
   Assert.WillNotRaiseAny(
     procedure
@@ -345,7 +345,7 @@ begin
   HeaderParams['Authorization'] := Format('Bearer %s', [AccessCompactToken]);
   HeaderParams[Constants.HEADER_REFRESHTOKEN] := RefreshCompactToken;
   ApiRequest := Mock<IHttpRequest>.Create;
-  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnlyDictionary).When.HeaderParams;
+  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnly).When.HeaderParams;
 
   Assert.WillNotRaiseAny(
     procedure
@@ -397,7 +397,7 @@ begin
   HeaderParams['Authorization'] := Format('Bearer %s', [AccessCompactToken]);
   HeaderParams[Constants.HEADER_REFRESHTOKEN] := RefreshCompactToken;
   ApiRequest := Mock<IHttpRequest>.Create;
-  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnlyDictionary).When.HeaderParams;
+  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnly).When.HeaderParams;
 
   Assert.WillNotRaiseAny(
     procedure
@@ -448,7 +448,7 @@ begin
   HeaderParams['Authorization'] := Format('Bearer %s', [AccessCompactToken]);
   HeaderParams[Constants.HEADER_REFRESHTOKEN] := RefreshCompactToken;
   ApiRequest := Mock<IHttpRequest>.Create;
-  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnlyDictionary).When.HeaderParams;
+  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnly).When.HeaderParams;
 
   Assert.WillNotRaiseAny(
     procedure
@@ -485,7 +485,7 @@ begin
   HeaderParams['Authorization'] := Format('Bearer %s', [MockUtils.SomeString]);
   HeaderParams[Constants.HEADER_REFRESHTOKEN] := MockUtils.SomeString;
   ApiRequest := Mock<IHttpRequest>.Create;
-  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnlyDictionary).When.HeaderParams;
+  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnly).When.HeaderParams;
 
   Assert.WillNotRaiseAny(
     procedure
@@ -534,7 +534,7 @@ begin
   HeaderParams['Authorization'] := Format('Bearer %s', [MockUtils.SomeString]);
   HeaderParams[Constants.HEADER_REFRESHTOKEN] := MockUtils.SomeString;
   ApiRequest := Mock<IHttpRequest>.Create;
-  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnlyDictionary).When.HeaderParams;
+  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnly).When.HeaderParams;
 
   Assert.WillNotRaiseAny(
     procedure
@@ -585,7 +585,7 @@ begin
   HeaderParams['Authorization'] := Format('Bearer %s', [MockUtils.SomeString]);
   HeaderParams[Constants.HEADER_REFRESHTOKEN] := MockUtils.SomeString;
   ApiRequest := Mock<IHttpRequest>.Create;
-  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnlyDictionary).When.HeaderParams;
+  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnly).When.HeaderParams;
 
   Assert.WillNotRaiseAny(
     procedure
@@ -621,7 +621,7 @@ begin
   HeaderParams['Authorization'] := Format('Bearer %s', [MockUtils.SomeString]);
   HeaderParams[Constants.HEADER_REFRESHTOKEN] := MockUtils.SomeString;
   ApiRequest := Mock<IHttpRequest>.Create;
-  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnlyDictionary).When.HeaderParams;
+  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnly).When.HeaderParams;
 
   Assert.WillNotRaiseAny(
     procedure
@@ -652,7 +652,7 @@ begin
   HeaderParams['Authorization'] := Format('somethingelse %s', [MockUtils.SomeString]);
   HeaderParams[Constants.HEADER_REFRESHTOKEN] := MockUtils.SomeString;
   ApiRequest := Mock<IHttpRequest>.Create;
-  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnlyDictionary).When.HeaderParams;
+  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnly).When.HeaderParams;
 
   Assert.WillNotRaiseAny(
     procedure
@@ -684,7 +684,7 @@ begin
   HeaderParams['Authorization'] := Format('Bearer %s', [MockUtils.SomeString]);
   HeaderParams[Constants.HEADER_REFRESHTOKEN] := MockUtils.SomeString;
   ApiRequest := Mock<IHttpRequest>.Create;
-  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnlyDictionary).When.HeaderParams;
+  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnly).When.HeaderParams;
 
   Assert.WillNotRaiseAny(
     procedure
@@ -711,7 +711,7 @@ begin
     begin
       UserRole := Mock<IUserRoleAndPermissions>.Create;
       UserRole.Setup.Returns<string>('user').When.Role;
-      UserRole.Setup.Returns<IReadonlyList<string>>(TCollections.CreateList<string>(['CanDoThis', 'CanDoThat']).AsReadOnlyList).When.Permissions;
+      UserRole.Setup.Returns<IReadonlyList<string>>(TCollections.CreateList<string>(['CanDoThis', 'CanDoThat']).AsReadOnly).When.Permissions;
 
       Result := UserRole;
     end;
@@ -722,7 +722,7 @@ begin
   HeaderParams['Authorization'] := Format('Bearer %s', [MockUtils.SomeString]);
   HeaderParams[Constants.HEADER_REFRESHTOKEN] := MockUtils.SomeString;
   ApiRequest := Mock<IHttpRequest>.Create;
-  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnlyDictionary).When.HeaderParams;
+  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnly).When.HeaderParams;
 
   Assert.WillNotRaiseAny(
     procedure
@@ -749,7 +749,7 @@ begin
     begin
       UserRole := Mock<IUserRoleAndPermissions>.Create;
       UserRole.Setup.Returns<string>('user').When.Role;
-      UserRole.Setup.Returns<IReadonlyList<Permission>>(TCollections.CreateList<Permission>([Permission.CanChangeUserState, Permission.CanSetUserRole]).AsReadOnlyList).When.Permissions;
+      UserRole.Setup.Returns<IReadonlyList<Permission>>(TCollections.CreateList<Permission>([Permission.CanChangeUserState, Permission.CanSetUserRole]).AsReadOnly).When.Permissions;
 
       Result := UserRole;
     end;
@@ -760,7 +760,7 @@ begin
   HeaderParams['Authorization'] := Format('Bearer %s', [MockUtils.SomeString]);
   HeaderParams[Constants.HEADER_REFRESHTOKEN] := MockUtils.SomeString;
   ApiRequest := Mock<IHttpRequest>.Create;
-  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnlyDictionary).When.HeaderParams;
+  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnly).When.HeaderParams;
 
   Assert.WillNotRaiseAny(
     procedure

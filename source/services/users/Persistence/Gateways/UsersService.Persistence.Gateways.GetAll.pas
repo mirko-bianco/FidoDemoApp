@@ -81,7 +81,7 @@ begin
         Match(EGetAllUsersGateway, 'Error mapping users. Error message: %s'));
     end);
 
-  Result := DestinationList.AsReadOnlyList;
+  Result := DestinationList.AsReadOnly;
 end;
 
 function TGetAllUsersGateway.DoGetAll(const Params: TGetAllMappedParams): IReadOnlyList<IUserRecord>;

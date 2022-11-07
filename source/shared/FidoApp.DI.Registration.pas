@@ -48,7 +48,7 @@ implementation
 
 procedure RegisterTokensCache(const Container: TContainer);
 begin
-  Container.RegisterType<IClientTokensCache>.DelegateTo(
+  Container.RegisterType<IClientTokensCache>(
     function: IClientTokensCache
     begin
       Result := TClientTokensCache.Create;
@@ -59,7 +59,7 @@ procedure RegisterAuthorizationApiV1(
   const Container: TContainer;
   const KVStore: IKVStore);
 begin
-  Container.RegisterType<IAuthorizationV1ApiClientConfiguration>.DelegateTo(
+  Container.RegisterType<IAuthorizationV1ApiClientConfiguration>(
     function: IAuthorizationV1ApiClientConfiguration
     begin
       Result := TAuthorizationV1ApiClientConfiguration.Create(
@@ -73,7 +73,7 @@ begin
 
   Containers.RegisterJSONClientApi<IAuthorizationV1ApiClient, IAuthorizationV1ApiClientConfiguration>(Container);
 
-  Container.RegisterType<IAuthorizationV1ApiClientGateway>.DelegateTo(
+  Container.RegisterType<IAuthorizationV1ApiClientGateway>(
     function: IAuthorizationV1ApiClientGateway
     begin
       Result := TAuthorizationV1ApiClientGateway.Create(
@@ -86,7 +86,7 @@ procedure RegisterAuthenticationApiV1(
   const Container: TContainer;
   const KVStore: IKVStore);
 begin
-  Container.RegisterType<IAuthenticationV1ApiClientConfiguration>.DelegateTo(
+  Container.RegisterType<IAuthenticationV1ApiClientConfiguration>(
     function: IAuthenticationV1ApiClientConfiguration
     begin
       Result := TAuthenticationV1ApiClientConfiguration.Create(
@@ -100,7 +100,7 @@ begin
 
   Containers.RegisterJSONClientApi<IAuthenticationV1ApiClient, IAuthenticationV1ApiClientConfiguration>(Container);
 
-  Container.RegisterType<IAuthenticationV1ApiClientGateway>.DelegateTo(
+  Container.RegisterType<IAuthenticationV1ApiClientGateway>(
     function: IAuthenticationV1ApiClientGateway
     begin
       Result := TAuthenticationV1ApiClientGateway.Create(
@@ -113,7 +113,7 @@ procedure RegisterUsersApiV1(
   const Container: TContainer;
   const KVStore: IKVStore);
 begin
-  Container.RegisterType<IUsersV1ApiClientConfiguration>.DelegateTo(
+  Container.RegisterType<IUsersV1ApiClientConfiguration>(
     function: IUsersV1ApiClientConfiguration
     begin
       Result := TUsersV1ApiClientConfiguration.Create(
@@ -127,7 +127,7 @@ begin
 
   Containers.RegisterJSONClientApi<IUsersV1ApiClient, IUsersV1ApiClientConfiguration>(Container);
 
-  Container.RegisterType<IUsersV1ApiClientGateway>.DelegateTo(
+  Container.RegisterType<IUsersV1ApiClientGateway>(
     function: IUsersV1ApiClientGateway
     begin
       Result := TUsersV1ApiClientGateway.Create(

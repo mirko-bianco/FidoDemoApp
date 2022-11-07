@@ -126,8 +126,8 @@ function TUserRepository.Store(const Id: TGuid; const User: TUser): Context<Void
 begin
   Result := &Try<TSignupParams>.
     New(TSignupParams.Create(Id.ToString, User.Username, User.HashedPassword)).
-    Map<Integer>(DoSignup).
-    Match(EUserRepository, Format('User "%s" could not be stored. %s', [User.Username, 'Error message: %s'])).
+      Map<Integer>(DoSignup).
+      Match(EUserRepository, Format('User "%s" could not be stored. %s', [User.Username, 'Error message: %s'])).
     Map<Void>(DoValidateSignupResult(User));
 end;
 
@@ -144,10 +144,11 @@ end;
 
 function TUserRepository.UpdateActiveByUserId(const UserStatus: TUserStatus): Context<Void>;
 begin
-  Result := TryOut<Integer>.New(
-    Retry<TChangeActiveStatusGatewayCallData>.
-      New(TChangeActiveStatusGatewayCallData.Create(UserStatus.Id, UserStatus.Active)).
-      Map<Integer>(DoChangeState, Retries.GetRetriesOnExceptionFunc())).
+  Result := TryOut<Integer>.
+    New(
+      Retry<TChangeActiveStatusGatewayCallData>.
+        New(TChangeActiveStatusGatewayCallData.Create(UserStatus.Id, UserStatus.Active)).
+        Map<Integer>(DoChangeState, Retries.GetRetriesOnExceptionFunc())).
     Match(function(const E: TObject): Integer
       begin
         raise EUserRepository.CreateFmt('User "%s" could not be updated. Error message: %s', [UserStatus.Id.ToString, (E as Exception).Message]);
