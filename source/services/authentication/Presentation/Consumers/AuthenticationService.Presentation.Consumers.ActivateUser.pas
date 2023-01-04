@@ -58,26 +58,20 @@ end;
 
 function TActivateUserConsumerController.OnException(const UserId: TGuid): OnFailureEvent<Void>;
 begin
-  Result := function(const E: TObject): Void
+  Result := function(const E: Exception): Nullable<Void>
     begin
       FEventsPublisher.Trigger('Authentication', 'UserActivationFailed', JSONMarshaller.From(UserId)).Value;
-      FLogger.Error((E as Exception).Message, E as Exception);
+      FLogger.Error(E.Message, E);
+      Result := Nullable<Void>.Create(Void.Get);
     end;
 end;
 
 procedure TActivateUserConsumerController.Run(const UserId: TGuid);
 begin
-  Logging.LogDuration(
-    FLogger,
-    Self.ClassName,
-    'Run',
-    procedure
-    begin
-      &Try<Shared<TUserStatus>>.
-        New(TUserStatus.Create(UserId, True)).
-        Map<Void>(DoChangeStatus).
-        Match(OnException(UserId)).Value;
-    end);
+  &Try<Shared<TUserStatus>>.
+    New(TUserStatus.Create(UserId, True)).
+    Map<Void>(DoChangeStatus).
+    Match(OnException(UserId)).Value;
 end;
 
 end.

@@ -5,6 +5,7 @@ interface
 uses
   System.SysUtils,
 
+  Spring,
   Spring.Logging,
 
   Fido.Utilities,
@@ -49,20 +50,14 @@ end;
 
 procedure TCancelSignupConsumerController.Run(const UserId: TGuid);
 begin
-  Logging.LogDuration(
-    FLogger,
-    Self.ClassName,
-    'Run',
-    procedure
-    begin
-      &Try<TGuid>.
-        New(UserId).
-        Map<Void>(DoRemove).
-        Match(function(const E: TObject): Void
-          begin
-            FLogger.Error((E as Exception).Message, E as Exception);
-          end).Value;
-    end);
+  &Try<TGuid>.
+    New(UserId).
+    Map<Void>(DoRemove).
+    Match(function(const E: Exception): Nullable<Void>
+      begin
+        FLogger.Error(E.Message, E);
+        Result := Nullable<Void>.Create(Void.Get);
+      end).Value;
 end;
 
 end.

@@ -7,14 +7,12 @@ uses
   Generics.Collections,
 
   Spring,
-  Spring.Logging,
 
   Fido.Utilities,
   Fido.Functional,
   Fido.Functional.Ifs,
   Fido.Functional.Tries,
   Fido.Types,
-  Fido.Logging.Utils,
   Fido.Http.Types,
   Fido.Api.Server.Exceptions,
   Fido.Api.Server.Resource.Attributes,
@@ -65,7 +63,6 @@ type
     end;
 
   private var
-    FLogger: ILogger;
     FSignupUseCase: ISignupUseCase;
     FRemoveUseCase: IRemoveUseCase;
     FEventsPublisher: IEventsDrivenPublisher<string>;
@@ -80,9 +77,10 @@ type
     function ValidateAndSignup(const RegisterParams: ISignupParams): TSignupAndIdParams;
     function DoSignup(const RegisterParams: ISignupParams): Context<TGuid>;
   public
-    constructor Create(const Logger: ILogger; const SignupUseCase: ISignupUseCase; const RemoveUseCase: IRemoveUseCase; const EventsPublisher: IEventsDrivenPublisher<string>);
+    constructor Create(const SignupUseCase: ISignupUseCase; const RemoveUseCase: IRemoveUseCase; const EventsPublisher: IEventsDrivenPublisher<string>);
 
     [Path(rmPost, '/1/signup')]
+    [ResponseCode(201, 'Created')]
     function Execute(const [BodyParam] RegisterParams: ISignupParams): TGuid;
   end;
   {$M-}
@@ -92,14 +90,12 @@ implementation
 { TSignupV1ApiServerController }
 
 constructor TSignupV1ApiServerController.Create(
-  const Logger: ILogger;
   const SignupUseCase: ISignupUseCase;
   const RemoveUseCase: IRemoveUseCase;
   const EventsPublisher: IEventsDrivenPublisher<string>);
 begin
   inherited Create;
 
-  FLogger := Utilities.CheckNotNullAndSet(Logger, 'Logger');
   FSignupUseCase := Utilities.CheckNotNullAndSet(SignupUseCase, 'SignupUseCase');
   FRemoveUseCase := Utilities.CheckNotNullAndSet(RemoveUseCase, 'RemoveUseCase');
   FEventsPublisher := Utilities.CheckNotNullAndSet(EventsPublisher, 'EventsPublisher');
@@ -173,23 +169,14 @@ end;
 
 function TSignupV1ApiServerController.Execute(const RegisterParams: ISignupParams): TGuid;
 begin
-  Result := Logging.LogDuration<TGuid>(
-    FLogger,
-    ClassName,
-    'Execute',
-    function: TGuid
-    begin
-      Result := &Try<ISignupParams>.
-        New(RegisterParams).
-        Map<TGuid>(DoSignup).
-        Match(function(const E: TObject): TGuid
-          begin
-            if E is ESignupUseCaseValidation then
-              raise EApiServer400.Create((E as Exception).Message)
-            else
-              raise EApiServer500.Create((E as Exception).Message, FLogger, ClassName, 'Execute');
-          end);
-    end);
+  Result := &Try<ISignupParams>.
+    New(RegisterParams).
+    Map<TGuid>(DoSignup).
+    Match(function(const E: Exception): Nullable<TGuid>
+      begin
+        if E is ESignupUseCaseValidation then
+          raise EApiServer400.Create(E.Message);
+      end);
 end;
 
 { TSignupV1ApiServerController.TSignupAndIdParams }

@@ -50,20 +50,14 @@ end;
 
 procedure TRemoveUserConsumerController.Run(const UserId: TGuid);
 begin
-  Logging.LogDuration(
-    FLogger,
-    Self.ClassName,
-    'Run',
-    procedure
-    begin
-      &Try<TGuid>.
-        New(UserId).
-        Map<Void>(DoRemoveUser).
-        Match(function(const E: TObject): Void
-          begin
-            FLogger.Error((E as Exception).Message, (E as Exception));
-          end).Value;
-    end);
+  &Try<TGuid>.
+    New(UserId).
+    Map<Void>(DoRemoveUser).
+    Match(function(const E: Exception): Nullable<Void>
+      begin
+        FLogger.Error(E.Message, E);
+        Result := Nullable<Void>.Create(Void.Get);
+      end).Value;
 end;
 
 end.

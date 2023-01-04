@@ -81,10 +81,11 @@ end;
 
 function TAddUserConsumerController.OnException(const User: TUser): OnFailureEvent<Void>;
 begin
-  Result := function(const E: TObject): Void
+  Result := function(const E: Exception): Nullable<Void>
     begin
       FEventsPublisher.Trigger('Users', 'UserAddFailed', JSONMarshaller.From(User.Id).DeQuotedString('"')).Value;
-      FLogger.Error((E as Exception).Message, E as Exception);
+      FLogger.Error(E.Message, E);
+      Result := Nullable<Void>.Create(Void.Get);
     end;
 end;
 
@@ -99,16 +100,9 @@ end;
 
 procedure TAddUserConsumerController.Run(const UserCreatedDto: IUserCreatedDto);
 begin
-  Logging.LogDuration(
-    FLogger,
-    Self.ClassName,
-    'Run',
-    procedure
-    begin
-      Context<IUserCreatedDto>(UserCreatedDto).
-        Map<TUser>(MapDto).
-        Map<Void>(Add).Value;
-    end);
+  Context<IUserCreatedDto>(UserCreatedDto).
+    Map<TUser>(MapDto).
+    Map<Void>(Add).Value;
 end;
 
 initialization

@@ -6,11 +6,9 @@ uses
   System.SysUtils,
 
   Spring,
-  Spring.Logging,
 
   Fido.Utilities,
   Fido.Types,
-  Fido.Logging.Utils,
   Fido.Http.Types,
   Fido.Functional,
   Fido.Functional.Tries,
@@ -30,14 +28,14 @@ type
   [Produces(mtJson)]
   TRefreshTokenV1ApiServerController = class(TObject)
   private
-    FLogger: ILogger;
     FUseCase: IRefreshTokenUseCase;
 
     function DoRefreshToken(const RefreshToken: string): Context<TTokens>;
   public
-    constructor Create(const Logger: ILogger; const UseCase: IRefreshTokenUseCase);
+    constructor Create(const UseCase: IRefreshTokenUseCase);
 
     [Path(rmGet, '/1/refresh')]
+    [ResponseCode(204, 'No content')]
     procedure Execute(const [HeaderParam(Constants.HEADER_REFRESHTOKEN)] RefreshToken: string; out [HeaderParam] Authorization: string; out [HeaderParam(Constants.HEADER_REFRESHTOKEN)] outRefreshToken: string);
   end;
   {$M-}
@@ -46,13 +44,10 @@ implementation
 
 { TRefreshTokenV1ApiServerController }
 
-constructor TRefreshTokenV1ApiServerController.Create(
-  const Logger: ILogger;
-  const UseCase: IRefreshTokenUseCase);
+constructor TRefreshTokenV1ApiServerController.Create(const UseCase: IRefreshTokenUseCase);
 begin
   inherited Create;
 
-  FLogger := Utilities.CheckNotNullAndSet(Logger, 'Logger');
   FUseCase := Utilities.CheckNotNullAndSet(UseCase, 'UseCase');
 end;
 
@@ -66,34 +61,20 @@ procedure TRefreshTokenV1ApiServerController.Execute(
   out Authorization: string;
   out outRefreshToken: string);
 var
-  LAuthorization: string;
-  LRefreshToken: string;
+  Tokens: TTokens;
 begin
-  Logging.LogDuration(
-    FLogger,
-    ClassName,
-    'Execute',
-    procedure
-    var
-      Tokens: TTokens;
-    begin
-      Tokens := &Try<string>.
-        New(RefreshToken).
-        Map<TTokens>(DoRefreshToken).
-        Match(function(const E: TObject): TTokens
-          begin
-            if E is ERefreshTokenUseCaseValidation then
-              raise EApiServer400.Create((E as Exception).Message)
-            else if E is ERefreshTokenUseCaseUnhauthorized then
-              raise EApiServer401.Create((E as Exception).Message)
-            else
-              raise EApiServer500.Create((E as Exception).Message, FLogger, ClassName, 'Execute');
-          end);
-      LAuthorization := Tokens.AccessToken;
-      LRefreshToken := Tokens.RefreshToken;
-    end);
-  Authorization := Format('Bearer %s', [LAuthorization]);
-  OutRefreshToken := LRefreshToken;
+  Tokens := &Try<string>.
+    New(RefreshToken).
+    Map<TTokens>(DoRefreshToken).
+    Match(function(const E: Exception): Nullable<TTokens>
+      begin
+        if E is ERefreshTokenUseCaseValidation then
+          raise EApiServer400.Create(E.Message)
+        else if E is ERefreshTokenUseCaseUnhauthorized then
+          raise EApiServer401.Create(E.Message);
+      end);
+  Authorization := Format('Bearer %s', [Tokens.AccessToken]);
+  OutRefreshToken := Tokens.RefreshToken;
 end;
 
 end.

@@ -51,12 +51,12 @@ type
     [Test]
     [TestCase('Activate', '{A6091D8C-21B4-40D8-B753-5800E2234B92},True')]
     [TestCase('Deactivate', '{A6091D8C-21B4-40D8-B753-5800E2234B92},False')]
-    procedure ExecuteRaisesEApiServer500WhenUserIsNotFound(const Id: string; const Active: string);
+    procedure ExecuteRaisesEChangeActiveStatusUseCaseFailureWhenUserIsNotFound(const Id: string; const Active: string);
 
     [Test]
     [TestCase('Activate', '{A6091D8C-21B4-40D8-B753-5800E2234B92},True')]
     [TestCase('Deactivate', '{A6091D8C-21B4-40D8-B753-5800E2234B92},False')]
-    procedure ExecuteRaisesEApiServer500WhenUpdateFails(const Id: string; const Active: string);
+    procedure ExecuteRaisesEChangeActiveStatusUseCaseFailureWhenUpdateFails(const Id: string; const Active: string);
   end;
 
 implementation
@@ -109,9 +109,7 @@ begin
       Result := Repository;
     end);
 
-  Resource := TChangeActiveStatusV1ApiServerController.Create(
-    Logger,
-    UseCase);
+  Resource := TChangeActiveStatusV1ApiServerController.Create(UseCase);
 
   Assert.WillNotRaiseAny(
     procedure
@@ -126,7 +124,7 @@ begin
   DeleteUserCommand.Received(Times.Never).Execute(Arg.IsAny<string>);
 end;
 
-procedure TAuthenticationServiceIntegrationApiServersChangeActiveStatusV1Tests.ExecuteRaisesEApiServer500WhenUpdateFails(const Id: string; const Active: string);
+procedure TAuthenticationServiceIntegrationApiServersChangeActiveStatusV1Tests.ExecuteRaisesEChangeActiveStatusUseCaseFailureWhenUpdateFails(const Id: string; const Active: string);
 var
   Resource: Shared<TChangeActiveStatusV1ApiServerController>;
   UseCase: IChangeActiveStatusUseCase;
@@ -172,16 +170,14 @@ begin
       Result := Repository;
     end);
 
-  Resource := TChangeActiveStatusV1ApiServerController.Create(
-    Logger,
-    UseCase);
+  Resource := TChangeActiveStatusV1ApiServerController.Create(UseCase);
 
   Assert.WillRaise(
     procedure
     begin
       Resource.Value.Execute(UserId, NewStatus);
     end,
-    EApiServer500);
+    EChangeActiveStatusUseCaseFailure);
 
   UpdateStatusCommand.Received(Times.Once).Execute(UserStatus.Value.Id.ToString, Utilities.IfThen<Integer>(NewStatus, 1, 0));
   UpdateStatusCommand.Received(Times.Never).Execute(Arg.IsNotIn<string>([UserStatus.Value.Id.ToString]), Arg.IsNotIn<Integer>([Utilities.IfThen<Integer>(NewStatus, 1, 0)]));
@@ -190,7 +186,7 @@ begin
   DeleteUserCommand.Received(Times.Never).Execute(Arg.IsAny<string>);
 end;
 
-procedure TAuthenticationServiceIntegrationApiServersChangeActiveStatusV1Tests.ExecuteRaisesEApiServer500WhenUserIsNotFound(const Id: string; const Active: string);
+procedure TAuthenticationServiceIntegrationApiServersChangeActiveStatusV1Tests.ExecuteRaisesEChangeActiveStatusUseCaseFailureWhenUserIsNotFound(const Id: string; const Active: string);
 var
   Resource: Shared<TChangeActiveStatusV1ApiServerController>;
   UseCase: IChangeActiveStatusUseCase;
@@ -236,16 +232,14 @@ begin
       Result := Repository;
     end);
 
-  Resource := TChangeActiveStatusV1ApiServerController.Create(
-    Logger,
-    UseCase);
+  Resource := TChangeActiveStatusV1ApiServerController.Create(UseCase);
 
   Assert.WillRaise(
     procedure
     begin
       Resource.Value.Execute(UserId, NewStatus);
     end,
-    EApiServer500);
+    EChangeActiveStatusUseCaseFailure);
 
   UpdateStatusCommand.Received(Times.Once).Execute(UserStatus.Value.Id.ToString, Utilities.IfThen<Integer>(NewStatus, 1, 0));
   UpdateStatusCommand.Received(Times.Never).Execute(Arg.IsNotIn<string>([UserStatus.Value.Id.ToString]), Arg.IsNotIn<Integer>([Utilities.IfThen<Integer>(NewStatus, 1, 0)]));

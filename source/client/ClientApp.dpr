@@ -1,5 +1,7 @@
 program ClientApp;
 
+{$STRONGLINKTYPES ON}
+
 uses
   System.StartUpCopy,
   System.SysUtils,

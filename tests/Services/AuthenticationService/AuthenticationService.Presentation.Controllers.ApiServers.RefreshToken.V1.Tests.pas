@@ -180,8 +180,6 @@ var
   GenerateRefreshTokenUseCase: IGenerateRefreshTokenUseCase;
   ServerTokensCache: IServerTokensCache;
 
-  Logger: Mock<ILogger>;
-
   UserRole: Mock<IUserRoleAndPermissions>;
 
   UserId: TGuid;
@@ -198,7 +196,7 @@ begin
 
   UserRole := Mock<IUserRoleAndPermissions>.Create;
   UserRole.Setup.Returns<string>('user').When.Role;
-  UserRole.Setup.Returns<IReadonlyList<string>>(TCollections.CreateList<string>(['perm1', 'perm2']).AsReadOnlyList).When.Permissions;
+  UserRole.Setup.Returns<IReadonlyList<Permission>>(TCollections.CreateList<Permission>([Permission.CanChangeUserState, Permission.CanSetUserRole]).AsReadOnly).When.Permissions;
 
   AuthorizationV1ApiClient := Mock<IAuthorizationV1ApiClient>.Create;
   AuthorizationV1ApiClient.Setup.Returns<IUserRoleAndPermissions>(UserRole).When.GetRole;
@@ -236,9 +234,7 @@ begin
     VALIDATIONSECRET,
     ServerTokensCache);
 
-  Resource := TRefreshTokenV1ApiServerController.Create(
-    Logger,
-    UseCase);
+  Resource := TRefreshTokenV1ApiServerController.Create(UseCase);
 
   Assert.WillRaise(
     procedure
@@ -264,8 +260,6 @@ var
   GenerateRefreshTokenUseCase: IGenerateRefreshTokenUseCase;
   ServerTokensCache: IServerTokensCache;
 
-  Logger: Mock<ILogger>;
-
   UserRole: Mock<IUserRoleAndPermissions>;
 
   UserId: TGuid;
@@ -285,7 +279,7 @@ begin
 
   UserRole := Mock<IUserRoleAndPermissions>.Create;
   UserRole.Setup.Returns<string>('user').When.Role;
-  UserRole.Setup.Returns<IReadonlyList<string>>(TCollections.CreateList<string>(['perm1', 'perm2']).AsReadOnlyList).When.Permissions;
+  UserRole.Setup.Returns<IReadonlyList<Permission>>(TCollections.CreateList<Permission>([Permission.CanChangeUserState, Permission.CanSetUserRole]).AsReadOnly).When.Permissions;
 
   AuthorizationV1ApiClient := Mock<IAuthorizationV1ApiClient>.Create;
   AuthorizationV1ApiClient.Setup.Returns<IUserRoleAndPermissions>(UserRole).When.GetRole;
@@ -323,9 +317,7 @@ begin
     VALIDATIONSECRET,
     ServerTokensCache);
 
-  Resource := TRefreshTokenV1ApiServerController.Create(
-    Logger,
-    UseCase);
+  Resource := TRefreshTokenV1ApiServerController.Create(UseCase);
 
   CurrentRefreshJwt := JwtManager.GenerateToken('');
   CurrentRefreshJwt.Value.Claims.SetClaimOfType<string>(Constants.CLAIM_USERID, MockUtils.SomeString);
@@ -356,8 +348,6 @@ var
   GenerateRefreshTokenUseCase: IGenerateRefreshTokenUseCase;
   ServerTokensCache: IServerTokensCache;
 
-  Logger: Mock<ILogger>;
-
   UserRole: Mock<IUserRoleAndPermissions>;
 
   UserId: TGuid;
@@ -380,7 +370,7 @@ begin
 
   UserRole := Mock<IUserRoleAndPermissions>.Create;
   UserRole.Setup.Returns<string>('user').When.Role;
-  UserRole.Setup.Returns<IReadonlyList<string>>(TCollections.CreateList<string>(['perm1', 'perm2']).AsReadOnlyList).When.Permissions;
+  UserRole.Setup.Returns<IReadonlyList<Permission>>(TCollections.CreateList<Permission>([Permission.CanChangeUserState, Permission.CanSetUserRole]).AsReadOnly).When.Permissions;
 
   AuthorizationV1ApiClient := Mock<IAuthorizationV1ApiClient>.Create;
   AuthorizationV1ApiClient.Setup.Returns<IUserRoleAndPermissions>(UserRole).When.GetRole;
@@ -418,9 +408,7 @@ begin
     VALIDATIONSECRET,
     ServerTokensCache);
 
-  Resource := TRefreshTokenV1ApiServerController.Create(
-    Logger,
-    UseCase);
+  Resource := TRefreshTokenV1ApiServerController.Create(UseCase);
 
   CurrentRefreshJwt := JwtManager.GenerateToken('');
   CurrentRefreshJwt.Value.Claims.SetClaimOfType<string>(Constants.CLAIM_USERID, UserId.ToString);
@@ -452,8 +440,6 @@ var
   UseCase: Mock<IRefreshTokenUseCase>;
   JwtManager: IJwtManager;
 
-  Logger: Mock<ILogger>;
-
   UserId: TGuid;
   Username: string;
   Password: string;
@@ -475,9 +461,7 @@ begin
       raise EAuthenticationServiceIntegrationApiServersRefreshTokenV1Tests.Create('There is an error.');
     end)).When.Run(Arg.IsAny<string>);
 
-  Resource := TRefreshTokenV1ApiServerController.Create(
-    Logger,
-    UseCase);
+  Resource := TRefreshTokenV1ApiServerController.Create(UseCase);
 
   CurrentRefreshJwt := JwtManager.GenerateToken('');
   CurrentRefreshJwt.Value.Claims.SetClaimOfType<string>(Constants.CLAIM_USERID, UserId.ToString);
@@ -489,7 +473,7 @@ begin
     begin
       Resource.Value.Execute(CurrentRefreshToken, Authorization, RefreshToken);
     end,
-    EApiServer500);
+    EAuthenticationServiceIntegrationApiServersRefreshTokenV1Tests);
 end;
 
 procedure TAuthenticationServiceIntegrationApiServersRefreshTokenV1Tests.ExecuteReturnsTrueWhenRefreshSucceds;
@@ -505,8 +489,6 @@ var
   ClientTokensCache: IClientTokensCache;
   GenerateRefreshTokenUseCase: IGenerateRefreshTokenUseCase;
   ServerTokensCache: IServerTokensCache;
-
-  Logger: Mock<ILogger>;
 
   UserRole: Mock<IUserRoleAndPermissions>;
 
@@ -527,7 +509,7 @@ begin
 
   UserRole := Mock<IUserRoleAndPermissions>.Create;
   UserRole.Setup.Returns<string>('user').When.Role;
-  UserRole.Setup.Returns<IReadonlyList<string>>(TCollections.CreateList<string>(['perm1', 'perm2']).AsReadOnlyList).When.Permissions;
+  UserRole.Setup.Returns<IReadonlyList<Permission>>(TCollections.CreateList<Permission>([Permission.CanChangeUserState, Permission.CanSetUserRole]).AsReadOnly).When.Permissions;
 
   AuthorizationV1ApiClient := Mock<IAuthorizationV1ApiClient>.Create;
   AuthorizationV1ApiClient.Setup.Returns<IUserRoleAndPermissions>(UserRole).When.GetRole;
@@ -565,9 +547,7 @@ begin
     VALIDATIONSECRET,
     ServerTokensCache);
 
-  Resource := TRefreshTokenV1ApiServerController.Create(
-    Logger,
-    UseCase);
+  Resource := TRefreshTokenV1ApiServerController.Create(UseCase);
 
   CurrentRefreshJwt := JwtManager.GenerateToken('');
   CurrentRefreshJwt.Value.Claims.SetClaimOfType<string>(Constants.CLAIM_USERID, UserId.ToString);
@@ -598,8 +578,6 @@ var
   GenerateRefreshTokenUseCase: IGenerateRefreshTokenUseCase;
   ServerTokensCache: IServerTokensCache;
 
-  Logger: Mock<ILogger>;
-
   UserRole: Mock<IUserRoleAndPermissions>;
 
   UserId: TGuid;
@@ -619,7 +597,7 @@ begin
 
   UserRole := Mock<IUserRoleAndPermissions>.Create;
   UserRole.Setup.Returns<string>('user').When.Role;
-  UserRole.Setup.Returns<IReadonlyList<string>>(TCollections.CreateList<string>(['perm1', 'perm2']).AsReadOnlyList).When.Permissions;
+  UserRole.Setup.Returns<IReadonlyList<Permission>>(TCollections.CreateList<Permission>([Permission.CanChangeUserState, Permission.CanSetUserRole]).AsReadOnly).When.Permissions;
 
   AuthorizationV1ApiClient := Mock<IAuthorizationV1ApiClient>.Create;
   AuthorizationV1ApiClient.Setup.Returns<IUserRoleAndPermissions>(UserRole).When.GetRole;
@@ -657,9 +635,7 @@ begin
     VALIDATIONSECRET,
     ServerTokensCache);
 
-  Resource := TRefreshTokenV1ApiServerController.Create(
-    Logger,
-    UseCase);
+  Resource := TRefreshTokenV1ApiServerController.Create(UseCase);
 
   CurrentRefreshJwt := JwtManager.GenerateToken('');
   CurrentRefreshJwt.Value.Claims.SetClaimOfType<string>(Constants.CLAIM_USERID, UserId.ToString);
@@ -690,8 +666,6 @@ var
   GenerateRefreshTokenUseCase: IGenerateRefreshTokenUseCase;
   ServerTokensCache: Mock<IServerTokensCache>;
 
-  Logger: Mock<ILogger>;
-
   UserRole: Mock<IUserRoleAndPermissions>;
 
   UserId: TGuid;
@@ -711,7 +685,7 @@ begin
 
   UserRole := Mock<IUserRoleAndPermissions>.Create;
   UserRole.Setup.Returns<string>('user').When.Role;
-  UserRole.Setup.Returns<IReadonlyList<string>>(TCollections.CreateList<string>(['perm1', 'perm2']).AsReadOnlyList).When.Permissions;
+  UserRole.Setup.Returns<IReadonlyList<Permission>>(TCollections.CreateList<Permission>([Permission.CanChangeUserState, Permission.CanSetUserRole]).AsReadOnly).When.Permissions;
 
   AuthorizationV1ApiClient := Mock<IAuthorizationV1ApiClient>.Create;
   AuthorizationV1ApiClient.Setup.Returns<IUserRoleAndPermissions>(UserRole).When.GetRole;
@@ -752,7 +726,7 @@ begin
     ServerTokensCache);
 
   Resource := TRefreshTokenV1ApiServerController.Create(
-    Logger,
+
     UseCase);
 
   CurrentRefreshJwt := JwtManager.GenerateToken('');
@@ -784,8 +758,6 @@ var
   GenerateRefreshTokenUseCase: IGenerateRefreshTokenUseCase;
   ServerTokensCache: IServerTokensCache;
 
-  Logger: Mock<ILogger>;
-
   UserRole: Mock<IUserRoleAndPermissions>;
 
   UserId: TGuid;
@@ -805,7 +777,7 @@ begin
 
   UserRole := Mock<IUserRoleAndPermissions>.Create;
   UserRole.Setup.Returns<string>('user').When.Role;
-  UserRole.Setup.Returns<IReadonlyList<string>>(TCollections.CreateList<string>(['perm1', 'perm2']).AsReadOnlyList).When.Permissions;
+  UserRole.Setup.Returns<IReadonlyList<Permission>>(TCollections.CreateList<Permission>([Permission.CanChangeUserState, Permission.CanSetUserRole]).AsReadOnly).When.Permissions;
 
   AuthorizationV1ApiClient := Mock<IAuthorizationV1ApiClient>.Create;
   AuthorizationV1ApiClient.Setup.Returns<IUserRoleAndPermissions>(UserRole).When.GetRole;
@@ -844,7 +816,7 @@ begin
     ServerTokensCache);
 
   Resource := TRefreshTokenV1ApiServerController.Create(
-    Logger,
+
     UseCase);
 
   CurrentRefreshJwt := JwtManager.GenerateToken('');
@@ -876,8 +848,6 @@ var
   GenerateRefreshTokenUseCase: IGenerateRefreshTokenUseCase;
   ServerTokensCache: IServerTokensCache;
 
-  Logger: Mock<ILogger>;
-
   UserRole: Mock<IUserRoleAndPermissions>;
 
   UserId: TGuid;
@@ -897,7 +867,7 @@ begin
 
   UserRole := Mock<IUserRoleAndPermissions>.Create;
   UserRole.Setup.Returns<string>('user').When.Role;
-  UserRole.Setup.Returns<IReadonlyList<string>>(TCollections.CreateList<string>(['perm1', 'perm2']).AsReadOnlyList).When.Permissions;
+  UserRole.Setup.Returns<IReadonlyList<Permission>>(TCollections.CreateList<Permission>([Permission.CanChangeUserState, Permission.CanSetUserRole]).AsReadOnly).When.Permissions;
 
   AuthorizationV1ApiClient := Mock<IAuthorizationV1ApiClient>.Create;
   AuthorizationV1ApiClient.Setup.Returns<IUserRoleAndPermissions>(UserRole).When.GetRole;
@@ -936,7 +906,7 @@ begin
     ServerTokensCache);
 
   Resource := TRefreshTokenV1ApiServerController.Create(
-    Logger,
+
     UseCase);
 
   CurrentRefreshJwt := JwtManager.GenerateToken('');
@@ -967,8 +937,6 @@ var
   GenerateRefreshTokenUseCase: IGenerateRefreshTokenUseCase;
   ServerTokensCache: IServerTokensCache;
 
-  Logger: Mock<ILogger>;
-
   UserRole: Mock<IUserRoleAndPermissions>;
 
   UserId: TGuid;
@@ -988,7 +956,7 @@ begin
 
   UserRole := Mock<IUserRoleAndPermissions>.Create;
   UserRole.Setup.Returns<string>('user').When.Role;
-  UserRole.Setup.Returns<IReadonlyList<string>>(TCollections.CreateList<string>(['perm1', 'perm2']).AsReadOnlyList).When.Permissions;
+  UserRole.Setup.Returns<IReadonlyList<Permission>>(TCollections.CreateList<Permission>([Permission.CanChangeUserState, Permission.CanSetUserRole]).AsReadOnly).When.Permissions;
 
   AuthorizationV1ApiClient := Mock<IAuthorizationV1ApiClient>.Create;
   AuthorizationV1ApiClient.Setup.Returns<IUserRoleAndPermissions>(UserRole).When.GetRole;
@@ -1027,7 +995,7 @@ begin
     ServerTokensCache);
 
   Resource := TRefreshTokenV1ApiServerController.Create(
-    Logger,
+
     UseCase);
 
   CurrentRefreshJwt := JwtManager.GenerateToken('');
@@ -1058,8 +1026,6 @@ var
   GenerateRefreshTokenUseCase: IGenerateRefreshTokenUseCase;
   ServerTokensCache: IServerTokensCache;
 
-  Logger: Mock<ILogger>;
-
   UserRole: Mock<IUserRoleAndPermissions>;
 
   UserId: TGuid;
@@ -1079,7 +1045,7 @@ begin
 
   UserRole := Mock<IUserRoleAndPermissions>.Create;
   UserRole.Setup.Returns<string>('user').When.Role;
-  UserRole.Setup.Returns<IReadonlyList<string>>(TCollections.CreateList<string>(['perm1', 'perm2']).AsReadOnlyList).When.Permissions;
+  UserRole.Setup.Returns<IReadonlyList<Permission>>(TCollections.CreateList<Permission>([Permission.CanChangeUserState, Permission.CanSetUserRole]).AsReadOnly).When.Permissions;
 
   AuthorizationV1ApiClient := Mock<IAuthorizationV1ApiClient>.Create;
   AuthorizationV1ApiClient.Setup.Returns<IUserRoleAndPermissions>(UserRole).When.GetRole;
@@ -1118,7 +1084,7 @@ begin
     ServerTokensCache);
 
   Resource := TRefreshTokenV1ApiServerController.Create(
-    Logger,
+
     UseCase);
 
   CurrentRefreshJwt := JwtManager.GenerateToken('');
@@ -1150,8 +1116,6 @@ var
   GenerateRefreshTokenUseCase: IGenerateRefreshTokenUseCase;
   ServerTokensCache: IServerTokensCache;
 
-  Logger: Mock<ILogger>;
-
   UserRole: Mock<IUserRoleAndPermissions>;
 
   UserId: TGuid;
@@ -1168,7 +1132,7 @@ begin
 
   UserRole := Mock<IUserRoleAndPermissions>.Create;
   UserRole.Setup.Returns<string>('user').When.Role;
-  UserRole.Setup.Returns<IReadonlyList<string>>(TCollections.CreateList<string>(['perm1', 'perm2']).AsReadOnlyList).When.Permissions;
+  UserRole.Setup.Returns<IReadonlyList<Permission>>(TCollections.CreateList<Permission>([Permission.CanChangeUserState, Permission.CanSetUserRole]).AsReadOnly).When.Permissions;
 
   AuthorizationV1ApiClient := Mock<IAuthorizationV1ApiClient>.Create;
   AuthorizationV1ApiClient.Setup.Returns<IUserRoleAndPermissions>(UserRole).When.GetRole;
@@ -1207,7 +1171,7 @@ begin
     ServerTokensCache);
 
   Resource := TRefreshTokenV1ApiServerController.Create(
-    Logger,
+
     UseCase);
 
   Assert.WillRaise(

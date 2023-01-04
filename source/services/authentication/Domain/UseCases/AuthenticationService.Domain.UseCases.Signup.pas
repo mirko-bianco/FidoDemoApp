@@ -78,10 +78,7 @@ begin
     New(&Try<TSignupData>.
       New(SignupData).
       Map<TSignupData>(Validate).
-      Match(function(const E: TObject): TSignupData
-        begin
-          raise ESignupUseCaseValidation.Create((E as Exception).Message);
-        end)).
+      Match(ESignupUseCaseValidation)).
     Map<TGuid>(DoStoreUser).
     Match(ESignupUseCaseFailure);
 end;

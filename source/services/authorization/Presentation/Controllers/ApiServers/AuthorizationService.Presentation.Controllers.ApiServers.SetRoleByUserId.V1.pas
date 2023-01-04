@@ -6,13 +6,11 @@ uses
   System.SysUtils,
 
   Spring,
-  Spring.Logging,
 
   Fido.Utilities,
   Fido.Functional,
   Fido.Functional.Tries,
   Fido.Types,
-  Fido.Logging.Utils,
   Fido.Http.Types,
   Fido.Api.Server.Exceptions,
   Fido.Api.Server.Resource.Attributes,
@@ -30,18 +28,18 @@ type
   [Produces(mtJson)]
   TSetRoleByUserIdV1ApiServerController = class(TObject)
   private
-    FLogger: ILogger;
     FSetRoleByUserIdUseCase: ISetRoleByUserIdUseCase;
 
     function SetRole(const UserRole: Shared<TUserRole>): Context<Void>;
     function DoSetRole(const UserRole: Shared<TUserRole>): Context<Void>;
   public
-    constructor Create(const Logger: ILogger; const SetRoleByUserIdUseCase: ISetRoleByUserIdUseCase);
+    constructor Create(const SetRoleByUserIdUseCase: ISetRoleByUserIdUseCase);
 
     [Path(rmPatch, '/1/role/{userid}/{role}')]
     [RequestMiddleware('Authenticated')]
     [RequestMiddleware('Authorized', Constants.PERMISSION_CAN_SET_USER_ROLE)]
     [ResponseMiddleware('ForwardTokens')]
+    [ResponseCode(204, 'No content')]
     procedure Execute(const [PathParam] UserId: TGuid; const [PathParam] Role: string);
   end;
   {$M-}
@@ -50,13 +48,10 @@ implementation
 
 { TGetRoleByUserIdV1ApiServerController }
 
-constructor TSetRoleByUserIdV1ApiServerController.Create(
-  const Logger: ILogger;
-  const SetRoleByUserIdUseCase: ISetRoleByUserIdUseCase);
+constructor TSetRoleByUserIdV1ApiServerController.Create(const SetRoleByUserIdUseCase: ISetRoleByUserIdUseCase);
 begin
   inherited Create;
 
-  FLogger := Utilities.CheckNotNullAndSet(Logger, 'Logger');
   FSetRoleByUserIdUseCase := Utilities.CheckNotNullAndSet(SetRoleByUserIdUseCase, 'SetRoleByUserIdUseCase');
 end;
 
@@ -70,24 +65,14 @@ begin
   Result := &Try<Shared<TUserRole>>.
     New(UserRole).
     Map<Void>(DoSetRole).
-    Match(function(const E: TObject): Void
-      begin
-        raise EApiServer500.Create((E as Exception).Message, FLogger, ClassName, 'SetRoleByUserId');
-      end);
+    Match(nil);
 end;
 
 procedure TSetRoleByUserIdV1ApiServerController.Execute(
   const UserId: TGuid;
   const Role: string);
 begin
-  Logging.LogDuration(
-    FLogger,
-    ClassName,
-    'SetRoleByUserId',
-    procedure
-    begin
-      Context<Shared<TUserRole>>.New(TUserRole.Create(UserId, Role)).Map<Void>(SetRole).Value;
-    end);
+  Context<Shared<TUserRole>>.New(TUserRole.Create(UserId, Role)).Map<Void>(SetRole).Value;
 end;
 
 end.

@@ -125,7 +125,7 @@ begin
   for Index := 1 to 20 do
     Users.Add(NewMockedUser);
 
-  Api.Setup.Returns<IGetAllUsersV1Result>(JSONUnMarshaller.To<IGetAllUsersV1Result>(Format('{"Count": 55, "Users": %s}', [JSONMarshaller.From<IReadonlyList<IUser>>(Users.AsReadOnlyList)]))).
+  Api.Setup.Returns<IGetAllUsersV1Result>(JSONUnMarshaller.To<IGetAllUsersV1Result>(Format('{"Count": 55, "Users": %s}', [JSONMarshaller.From<IReadonlyList<IUser>>(Users.AsReadOnly)]))).
     When.GetAll(Arg.IsIn<TGetAllUsersOrderBy>([TGetAllUsersOrderBy.FirstNameAsc]), Arg.IsIn<Integer>([1, 3]), Arg.IsIn<Integer>([20]));
 
   Gateway := TUsersV1ApiClientGateway.Create(Api);
@@ -187,7 +187,7 @@ begin
   for Index := 1 to 20 do
     Users.Add(NewMockedUser);
 
-  Api.Setup.Returns<IGetAllUsersV1Result>(JSONUnMarshaller.To<IGetAllUsersV1Result>(Format('{"Count": 55, "Users": %s}', [JSONMarshaller.From<IReadonlyList<IUser>>(Users.AsReadOnlyList)]))).
+  Api.Setup.Returns<IGetAllUsersV1Result>(JSONUnMarshaller.To<IGetAllUsersV1Result>(Format('{"Count": 55, "Users": %s}', [JSONMarshaller.From<IReadonlyList<IUser>>(Users.AsReadOnly)]))).
     When.GetAll(TGetAllUsersOrderBy.FirstNameAsc, 1, 20);
 
   Gateway := TUsersV1ApiClientGateway.Create(Api);
@@ -247,7 +247,7 @@ begin
   for Index := 1 to 20 do
     Users.Add(NewMockedUser);
 
-  Api.Setup.Returns<IGetAllUsersV1Result>(JSONUnMarshaller.To<IGetAllUsersV1Result>(Format('{"Count": 55, "Users": %s}', [JSONMarshaller.From<IReadonlyList<IUser>>(Users.AsReadOnlyList)]))).
+  Api.Setup.Returns<IGetAllUsersV1Result>(JSONUnMarshaller.To<IGetAllUsersV1Result>(Format('{"Count": 55, "Users": %s}', [JSONMarshaller.From<IReadonlyList<IUser>>(Users.AsReadOnly)]))).
     When.GetAll(TGetAllUsersOrderBy.FirstNameAsc, 1, 20);
 
   Gateway := TUsersV1ApiClientGateway.Create(Api);
@@ -307,7 +307,7 @@ begin
   for Index := 1 to 20 do
     Users.Add(NewMockedUser);
 
-  Api.Setup.Returns<IGetAllUsersV1Result>(JSONUnMarshaller.To<IGetAllUsersV1Result>(Format('{"Count": 55, "Users": %s}', [JSONMarshaller.From<IReadonlyList<IUser>>(Users.AsReadOnlyList)]))).
+  Api.Setup.Returns<IGetAllUsersV1Result>(JSONUnMarshaller.To<IGetAllUsersV1Result>(Format('{"Count": 55, "Users": %s}', [JSONMarshaller.From<IReadonlyList<IUser>>(Users.AsReadOnly)]))).
     When.GetAll(Arg.IsIn<TGetAllUsersOrderBy>([TGetAllUsersOrderBy.FirstNameAsc]), Arg.IsIn<Integer>([1, 2]), Arg.IsIn<Integer>([20]));
 
   Gateway := TUsersV1ApiClientGateway.Create(Api);
@@ -369,7 +369,7 @@ begin
   for Index := 1 to 20 do
     Users.Add(NewMockedUser);
 
-  Api.Setup.Returns<IGetAllUsersV1Result>(JSONUnMarshaller.To<IGetAllUsersV1Result>(Format('{"Count": 100, "Users": %s}', [JSONMarshaller.From<IReadonlyList<IUser>>(Users.AsReadOnlyList)]))).
+  Api.Setup.Returns<IGetAllUsersV1Result>(JSONUnMarshaller.To<IGetAllUsersV1Result>(Format('{"Count": 100, "Users": %s}', [JSONMarshaller.From<IReadonlyList<IUser>>(Users.AsReadOnly)]))).
     When.GetAll(Arg.IsIn<TGetAllUsersOrderBy>([TGetAllUsersOrderBy.FirstNameAsc]), Arg.IsIn<Integer>([1, 3, 5]), Arg.IsIn<Integer>([20]));
 
   Gateway := TUsersV1ApiClientGateway.Create(Api);
@@ -429,7 +429,7 @@ begin
   for Index := 1 to 20 do
     Users.Add(NewMockedUser);
 
-  Api.Setup.Returns<IGetAllUsersV1Result>(JSONUnMarshaller.To<IGetAllUsersV1Result>(Format('{"Count": 100, "Users": %s}', [JSONMarshaller.From<IReadonlyList<IUser>>(Users.AsReadOnlyList)]))).
+  Api.Setup.Returns<IGetAllUsersV1Result>(JSONUnMarshaller.To<IGetAllUsersV1Result>(Format('{"Count": 100, "Users": %s}', [JSONMarshaller.From<IReadonlyList<IUser>>(Users.AsReadOnly)]))).
     When.GetAll(Arg.IsIn<TGetAllUsersOrderBy>([TGetAllUsersOrderBy.FirstNameAsc]), Arg.IsIn<Integer>([1]), Arg.IsIn<Integer>([20]));
 
   Gateway := TUsersV1ApiClientGateway.Create(Api);
@@ -490,9 +490,9 @@ begin
   for Index := 1 to 20 do
     Users.Add(NewMockedUser);
 
-  Api.Setup.Returns<IGetAllUsersV1Result>(JSONUnMarshaller.To<IGetAllUsersV1Result>(Format('{"Count": 55, "Users": %s}', [JSONMarshaller.From<IReadonlyList<IUser>>(Users.AsReadOnlyList)]))).
+  Api.Setup.Returns<IGetAllUsersV1Result>(JSONUnMarshaller.To<IGetAllUsersV1Result>(Format('{"Count": 55, "Users": %s}', [JSONMarshaller.From<IReadonlyList<IUser>>(Users.AsReadOnly)]))).
     When.GetAll(TGetAllUsersOrderBy.FirstNameAsc, 1, 20);
-  Api.Setup.Returns<IGetAllUsersV1Result>(JSONUnMarshaller.To<IGetAllUsersV1Result>(Format('{"Count": 55, "Users": %s}', [JSONMarshaller.From<IReadonlyList<IUser>>(Users.AsReadOnlyList)]))).
+  Api.Setup.Returns<IGetAllUsersV1Result>(JSONUnMarshaller.To<IGetAllUsersV1Result>(Format('{"Count": 55, "Users": %s}', [JSONMarshaller.From<IReadonlyList<IUser>>(Users.AsReadOnly)]))).
     When.GetAll(TGetAllUsersOrderBy.FirstNameDesc, 1, 20);
 
   Gateway := TUsersV1ApiClientGateway.Create(Api);
@@ -553,9 +553,9 @@ begin
   for Index := 1 to 20 do
     Users.Add(NewMockedUser);
 
-  Api.Setup.Returns<IGetAllUsersV1Result>(JSONUnMarshaller.To<IGetAllUsersV1Result>(Format('{"Count": 55, "Users": %s}', [JSONMarshaller.From<IReadonlyList<IUser>>(Users.AsReadOnlyList)]))).
+  Api.Setup.Returns<IGetAllUsersV1Result>(JSONUnMarshaller.To<IGetAllUsersV1Result>(Format('{"Count": 55, "Users": %s}', [JSONMarshaller.From<IReadonlyList<IUser>>(Users.AsReadOnly)]))).
     When.GetAll(TGetAllUsersOrderBy.FirstNameAsc, 1, 20);
-  Api.Setup.Returns<IGetAllUsersV1Result>(JSONUnMarshaller.To<IGetAllUsersV1Result>(Format('{"Count": 55, "Users": %s}', [JSONMarshaller.From<IReadonlyList<IUser>>(Users.AsReadOnlyList)]))).
+  Api.Setup.Returns<IGetAllUsersV1Result>(JSONUnMarshaller.To<IGetAllUsersV1Result>(Format('{"Count": 55, "Users": %s}', [JSONMarshaller.From<IReadonlyList<IUser>>(Users.AsReadOnly)]))).
     When.GetAll(TGetAllUsersOrderBy.FirstNameDesc, 1, 20);
 
   Gateway := TUsersV1ApiClientGateway.Create(Api);
@@ -627,7 +627,7 @@ begin
   for Index := 1 to 20 do
     Users.Add(NewMockedUser);
 
-  Api.Setup.Returns<IGetAllUsersV1Result>(JSONUnMarshaller.To<IGetAllUsersV1Result>(Format('{"Count": 55, "Users": %s}', [JSONMarshaller.From<IReadonlyList<IUser>>(Users.AsReadOnlyList)]))).
+  Api.Setup.Returns<IGetAllUsersV1Result>(JSONUnMarshaller.To<IGetAllUsersV1Result>(Format('{"Count": 55, "Users": %s}', [JSONMarshaller.From<IReadonlyList<IUser>>(Users.AsReadOnly)]))).
     When.GetAll(Arg.IsIn<TGetAllUsersOrderBy>([TGetAllUsersOrderBy.FirstNameAsc]), Arg.IsIn<Integer>([1, 3]), Arg.IsIn<Integer>([20]));
 
   Gateway := TUsersV1ApiClientGateway.Create(Api);
@@ -689,7 +689,7 @@ begin
   for Index := 1 to 20 do
     Users.Add(NewMockedUser);
 
-  Api.Setup.Returns<IGetAllUsersV1Result>(JSONUnMarshaller.To<IGetAllUsersV1Result>(Format('{"Count": 55, "Users": %s}', [JSONMarshaller.From<IReadonlyList<IUser>>(Users.AsReadOnlyList)]))).
+  Api.Setup.Returns<IGetAllUsersV1Result>(JSONUnMarshaller.To<IGetAllUsersV1Result>(Format('{"Count": 55, "Users": %s}', [JSONMarshaller.From<IReadonlyList<IUser>>(Users.AsReadOnly)]))).
     When.GetAll(TGetAllUsersOrderBy.FirstNameAsc, 1, 20);
 
   Gateway := TUsersV1ApiClientGateway.Create(Api);
@@ -749,7 +749,7 @@ begin
   for Index := 1 to 20 do
     Users.Add(NewMockedUser);
 
-  Api.Setup.Returns<IGetAllUsersV1Result>(JSONUnMarshaller.To<IGetAllUsersV1Result>(Format('{"Count": 55, "Users": %s}', [JSONMarshaller.From<IReadonlyList<IUser>>(Users.AsReadOnlyList)]))).
+  Api.Setup.Returns<IGetAllUsersV1Result>(JSONUnMarshaller.To<IGetAllUsersV1Result>(Format('{"Count": 55, "Users": %s}', [JSONMarshaller.From<IReadonlyList<IUser>>(Users.AsReadOnly)]))).
     When.GetAll(Arg.IsIn<TGetAllUsersOrderBy>([TGetAllUsersOrderBy.FirstNameAsc]), Arg.IsIn<Integer>([1, 2]), Arg.IsIn<Integer>([20]));
 
   Gateway := TUsersV1ApiClientGateway.Create(Api);
@@ -810,7 +810,7 @@ begin
   for Index := 1 to 20 do
     Users.Add(NewMockedUser);
 
-  Api.Setup.Returns<IGetAllUsersV1Result>(JSONUnMarshaller.To<IGetAllUsersV1Result>(Format('{"Count": 55, "Users": %s}', [JSONMarshaller.From<IReadonlyList<IUser>>(Users.AsReadOnlyList)]))).
+  Api.Setup.Returns<IGetAllUsersV1Result>(JSONUnMarshaller.To<IGetAllUsersV1Result>(Format('{"Count": 55, "Users": %s}', [JSONMarshaller.From<IReadonlyList<IUser>>(Users.AsReadOnly)]))).
     When.GetAll(TGetAllUsersOrderBy.FirstNameAsc, 1, 20);
 
   Gateway := TUsersV1ApiClientGateway.Create(Api);

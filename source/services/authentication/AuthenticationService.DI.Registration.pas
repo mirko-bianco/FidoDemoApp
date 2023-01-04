@@ -40,6 +40,7 @@ uses
   Fido.Http.Types,
   Fido.Web.Server.Null,
   Fido.Api.Server.Intf,
+  Fido.Api.Server.Brook,
   Fido.Api.Server.Indy,
   Fido.JWT.Manager.Intf,
   Fido.JWT.Manager,
@@ -124,15 +125,24 @@ var
   PrivateKeyContent: string;
   IniFile: IShared<TMemIniFile>;
   FireDacDatabaseParams: IShared<TStringList>;
-  ServerPort: Integer;
-  ServerMaxConnections: Integer;
-  ServerServiceName: string;
   LogFileName: string;
 begin
   IniFile := Shared.Make(TMemIniFile.Create(Utils.Files.GetIniFilename));
   Registration.RegisterFramework(Container);
 
   Fido.Consul.DI.Registration.Register(Container, IniFile);
+  LogFilename := IniFile.ReadString('Log', 'Filename', Utils.Files.GetLogFilename);
+  Container.RegisterType<ILogAppender>(
+    function: ILogAppender
+    begin
+      Result := TPermanentFileLogAppender.Create(LogFilename);
+    end);
+
+  Container.RegisterType<ILogger>(
+    function: ILogger
+    begin
+      Result := TLogger.Create(TLoggerController.Create([Container.Resolve<ILogAppender>]));
+    end).AsSingleton;
   Container.Build;
   ConsulKVStore := Container.Resolve<IKVStore>;
 
@@ -171,36 +181,33 @@ begin
         'DbMigrations');
     end);
 
-  ServerPort := IniFile.ReadInteger('Server', 'Port', 8080);
-  ServerMaxConnections := IniFile.ReadInteger('Server', 'MaxConnections', 50);
-  ServerServiceName := IniFile.ReadString('Server', 'ServiceName', 'AuthenticationService');
-
   Container.RegisterType<IApiServer>(
     function: IApiServer
+    var
+      Server: IApiServer;
     begin
-      Result := TConsulAwareApiServer.Create(
-        TIndyApiServer.Create(
-          ServerPort,
-          ServerMaxConnections,
+      if IniFile.ReadString('Server', 'Type', 'Brook') = 'Indy' then
+        Server := TIndyApiServer.Create(
+          IniFile.ReadInteger('Server', 'Port', 8080),
+          IniFile.ReadInteger('IndyServer', 'MaxConnections', 50),
           TNullWebServer.Create,
-          TSSLCertData.CreateEmpty) ,
+          TSSLCertData.CreateEmpty)
+      else
+        Server := TBrookApiServer.Create(
+          IniFile.ReadInteger('Server', 'Port', 8080),
+          IniFile.ReadInteger('BrookServer', 'ConnectionLimit', 50),
+          IniFile.ReadBool('BrookServer', 'Threaded', True),
+          IniFile.ReadInteger('BrookServer', 'ThreadPoolSize', 0),
+          mtJson,
+          TNullWebServer.Create,
+          TSSLCertData.CreateEmpty);
+
+      Result := TConsulAwareApiServer.Create(
+        Server,
         Container.Resolve<IConsulService>,
-        ServerServiceName,
+        IniFile.ReadString('Server', 'ServiceName', 'AuthenticationService'),
         Constants.TIMEOUT);
     end);
-
-  LogFilename := IniFile.ReadString('Log', 'Filename', Utils.Files.GetLogFilename);
-  Container.RegisterType<ILogAppender>(
-    function: ILogAppender
-    begin
-      Result := TPermanentFileLogAppender.Create(LogFilename);
-    end);
-
-  Container.RegisterType<ILogger>(
-    function: ILogger
-    begin
-      Result := TLogger.Create(TLoggerController.Create([Container.Resolve<ILogAppender>]));
-    end).AsSingleton;
 
   Container.RegisterType<IJWTManager, TJWTManager>;
 

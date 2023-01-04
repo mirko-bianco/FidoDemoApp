@@ -149,10 +149,7 @@ begin
       Retry<TChangeActiveStatusGatewayCallData>.
         New(TChangeActiveStatusGatewayCallData.Create(UserStatus.Id, UserStatus.Active)).
         Map<Integer>(DoChangeState, Retries.GetRetriesOnExceptionFunc())).
-    Match(function(const E: TObject): Integer
-      begin
-        raise EUserRepository.CreateFmt('User "%s" could not be updated. Error message: %s', [UserStatus.Id.ToString, (E as Exception).Message]);
-      end).
+    Match(EUserRepository, Format('User "%s" could not be updated. Error message: %%s', [UserStatus.Id.ToString])).
     Map<Void>(Void.MapProc<Integer>(AffectedRowsMustBe1));
 end;
 

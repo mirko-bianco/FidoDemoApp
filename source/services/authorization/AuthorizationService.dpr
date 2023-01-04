@@ -1,6 +1,7 @@
 program AuthorizationService;
 
 {$APPTYPE CONSOLE}
+{$STRONGLINKTYPES ON}
 
 {$R *.res}
 {$R 'AuthorizationService.Queries.res' 'AuthorizationService.Queries.rc'}
@@ -79,6 +80,7 @@ begin
 
       Utils.Apis.Server.Middlewares.Register(
         Server,
+        Container.Value.Resolve<ILogger>,
         Container.Value.Resolve<IJWTManager>,
         ConsulKVStore.Get('public.key', Constants.TIMEOUT),
         function(const CurrentRefreshToken: string; out AccessToken: string; out RefreshToken: string): Boolean

@@ -78,11 +78,11 @@ begin
   Result := &Try<TGetAllInputParams>.
     New(TGetAllInputParams.Create(OrderBy, Limit,  (Page - 1) * Limit)).
     Map<TGetAllV1Result>(DoGetAll).
-    Match(function(const E: TObject): TGetAllV1Result
+    Match(function(const E: Exception): Nullable<TGetAllV1Result>
       begin
         if E.InheritsFrom(EUserRepositoryValidation) then
-          raise EGetAllUseCaseValidation.Create((E as Exception).Message);
-        raise EGetAllUseCaseFailure.Create((E as Exception).Message);
+          raise EGetAllUseCaseValidation.Create(E.Message);
+        raise EGetAllUseCaseFailure.Create(E.Message);
       end);
 end;
 

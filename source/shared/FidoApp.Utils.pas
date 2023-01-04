@@ -12,16 +12,20 @@ uses
   JOSE.Core.JWT,
 
   Spring,
+  Spring.Logging,
   Spring.Collections,
 
   Fido.Types,
+  Fido.Http.Types,
   Fido.Api.Server.Intf,
+  Fido.EventsDriven,
   Fido.JWT.Manager.Intf,
   Fido.Http.Request.Intf,
   Fido.Http.Response.Intf,
   Fido.Db.Connections.FireDac,
   Fido.Db.Migrations.Model.Intf,
   Fido.JSON.Marshalling,
+  Fido.Logging.Utils,
 
   FidoApp.Types,
   FidoApp.Constants,
@@ -49,16 +53,23 @@ type
           class function ValidateToken(const JWTManager: IJWTManager; const VerificationKey: string; const Token: string; const ClaimType: string; out ResponseCode: Integer; out ResponseText: string;
             out IsExpired: Boolean): Boolean; static;
         public
-          class function GetAuthenticated(const JWTManager: IJWTManager; const VerificationKey: string; const RefreshTokenFunc: TRefreshTokensFunc): TRequestMiddlewareFunc; static;
-          class function GetAuthorized(const GetUserRoleFunc: TGetUserRoleFunc): TRequestMiddlewareFunc; static;
-          class function GetForwardTokens: TResponseMiddlewareProc; static;
+          class function GetAuthenticated(const JWTManager: IJWTManager; const VerificationKey: string; const RefreshTokenFunc: TRefreshTokensFunc): TApiRequestMiddlewareFunc; static;
+          class function GetAuthorized(const GetUserRoleFunc: TGetUserRoleFunc): TApiRequestMiddlewareFunc; static;
+          class function GetForwardTokens: TApiResponseMiddlewareProc; static;
+          class function GetLogged(const Logger: ILogger): TApiGlobalMiddlewareProc; static;
 
-          class procedure Register(const Server: IApiServer; const JWTManager: IJWTManager; const VerificationKey: string; const RefreshTokensFunc: TRefreshTokensFunc;
+          class procedure Register(const Server: IApiServer; const Logger: ILogger; const JWTManager: IJWTManager; const VerificationKey: string; const RefreshTokensFunc: TRefreshTokensFunc;
             const GetUserRoleFunc: TGetUserRoleFunc); static;
         end;
         Jwt = record
           class function ExtractUserRoleAndPermissions(const AuthenticationToken: string): IUserRoleAndPermissions; static;
         end;
+      end;
+    end;
+    Consumers = record
+    type
+      Middlewares = record
+        class function GetLogged(const Logger: ILogger): TEventDrivenGlobalMiddlewareProc; static;
       end;
     end;
   type
@@ -148,7 +159,7 @@ end;
 class function Utils.Apis.Server.Middlewares.GetAuthenticated(
   const JWTManager: IJWTManager;
   const VerificationKey: string;
-  const RefreshTokenFunc: TRefreshTokensFunc): TRequestMiddlewareFunc;
+  const RefreshTokenFunc: TRefreshTokensFunc): TApiRequestMiddlewareFunc;
 begin
   Result :=
     function(const CommaSeparatedParams: string; const ApiRequest: IHttpRequest; out ResponseCode: Integer; out ResponseText: string): Boolean
@@ -194,7 +205,7 @@ begin
     end;
 end;
 
-class function Utils.Apis.Server.Middlewares.GetAuthorized(const GetUserRoleFunc: TGetUserRoleFunc): TRequestMiddlewareFunc;
+class function Utils.Apis.Server.Middlewares.GetAuthorized(const GetUserRoleFunc: TGetUserRoleFunc): TApiRequestMiddlewareFunc;
 var
   Authorized: Boolean;
   RequiredPermission: Permission;
@@ -241,7 +252,7 @@ begin
     end;
 end;
 
-class function Utils.Apis.Server.Middlewares.GetForwardTokens: TResponseMiddlewareProc;
+class function Utils.Apis.Server.Middlewares.GetForwardTokens: TApiResponseMiddlewareProc;
 begin
   Result :=
     procedure(const CommaSeparaterParams: string; const ApiRequest: IHttpRequest; const ApiResponse: IHttpResponse)
@@ -251,8 +262,21 @@ begin
     end;
 end;
 
+class function Utils.Apis.Server.Middlewares.GetLogged(const Logger: ILogger): TApiGlobalMiddlewareProc;
+begin
+  Result := procedure(const EndpointMethod: Action; const ClassName: string; const MethodName: string)
+    begin
+      Logging.LogDuration(
+        Logger,
+        ClassName,
+        MethodName,
+        EndPointMethod);
+    end;
+end;
+
 class procedure Utils.Apis.Server.Middlewares.Register(
   const Server: IApiServer;
+  const Logger: ILogger;
   const JWTManager: IJWTManager;
   const VerificationKey: string;
   const RefreshTokensFunc: TRefreshTokensFunc;
@@ -269,6 +293,7 @@ begin
   Server.RegisterResponseMiddleware(
     'ForwardTokens',
     Utils.Apis.Server.Middlewares.GetForwardTokens());
+  Server.RegisterGlobalMiddleware(Utils.Apis.Server.Middlewares.GetLogged(Logger))
 end;
 
 { Utils.Apis.Server.Jwt }
@@ -307,6 +332,20 @@ begin
     Exit;
   Perm := Permission(Index);
   Result := True;
+end;
+
+{ Utils.Consumers.Middlewares }
+
+class function Utils.Consumers.Middlewares.GetLogged(const Logger: ILogger): TEventDrivenGlobalMiddlewareProc;
+begin
+  Result := procedure(const ConsumerMethod: Action; const ClassName: string; const MethodName: string)
+    begin
+      Logging.LogDuration(
+        Logger,
+        ClassName,
+        MethodName,
+        ConsumerMethod);
+    end;
 end;
 
 end.

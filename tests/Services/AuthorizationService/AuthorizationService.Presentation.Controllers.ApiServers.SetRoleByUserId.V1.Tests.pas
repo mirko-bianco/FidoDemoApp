@@ -45,14 +45,14 @@ type
     [Test]
     [TestCase('Zero Records', '0')]
     [TestCase('Two Records', '2')]
-    procedure ExecuteRaisesEApiServer500WhenXRecordsAreUpdatedInTheDatabase(const AffectedRecords: Integer);
+    procedure ExecuteRaisesESetRoleByUserIdUseCaseFailureWhenXRecordsAreUpdatedInTheDatabase(const AffectedRecords: Integer);
   end;
 
 implementation
 
 { TAuthorizationServiceAdaptersControllersApiServersSetRoleByUserIdV1Tests }
 
-procedure TAuthorizationServiceAdaptersControllersApiServersSetRoleByUserIdV1Tests.ExecuteRaisesEApiServer500WhenXRecordsAreUpdatedInTheDatabase(const AffectedRecords: Integer);
+procedure TAuthorizationServiceAdaptersControllersApiServersSetRoleByUserIdV1Tests.ExecuteRaisesESetRoleByUserIdUseCaseFailureWhenXRecordsAreUpdatedInTheDatabase(const AffectedRecords: Integer);
 var
   Resource: Shared<TSetRoleByUserIdV1ApiServerController>;
   SetRoleByUserId: ISetRoleByUserIdUseCase;
@@ -92,7 +92,7 @@ begin
     end);
 
   Resource := TSetRoleByUserIdV1ApiServerController.Create(
-    Logger,
+
     SetRoleByUserId);
 
   Assert.WillRaise(
@@ -100,7 +100,7 @@ begin
     begin
       Resource.Value.Execute(UserId, Role);
     end,
-    EApiServer500);
+    ESetRoleByUserIdUseCaseFailure);
 
   GetUserRoleByUserIdQuery.Received(Times.Never).Open(Arg.IsAny<string>);
   UpsertUserRoleByUserIdCommand.Received(Times.Once).Exec(UserId.ToString, Role);
@@ -147,7 +147,7 @@ begin
     end);
 
   Resource := TSetRoleByUserIdV1ApiServerController.Create(
-    Logger,
+
     SetRoleByUserId);
 
   Assert.WillNotRaiseAny(

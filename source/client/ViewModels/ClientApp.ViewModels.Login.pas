@@ -144,10 +144,13 @@ begin
     Result := &Try<TLoginUser>.
       New(LoginUser).
       Map<Void>(DoLogin).
-      Match(function(const E: TObject): Void
+      Match(function(const E: Exception): Nullable<Void>
         begin
           if E.InheritsFrom(EFidoClientApiException) then
+          begin
             NotifyFailedLogin(Format('%d: %s', [(E as EFidoClientApiException).ErrorCode, (E as EFidoClientApiException).ErrorMessage]));
+          end;
+          Result := Nullable<Void>.Create(Void.Get);
         end,
         procedure
         begin
@@ -162,12 +165,13 @@ begin
     Result := &Try<TSignupUser>.
       New(SignupUser).
       Map<Void>(DoSignup).
-      Match(function(const E: TObject): Void
+      Match(function(const E: Exception): Nullable<Void>
         begin
           if E.InheritsFrom(ESignupUserValidation) then
-            NotifyFailedLogin((E as Exception).Message)
+            NotifyFailedLogin(E.Message)
           else
             NotifyFailedLogin(Format('%d: %s', [-1, 'Could not signup at this time']));
+          Result := Nullable<Void>.Create(Void.Get);
         end,
         procedure
         begin

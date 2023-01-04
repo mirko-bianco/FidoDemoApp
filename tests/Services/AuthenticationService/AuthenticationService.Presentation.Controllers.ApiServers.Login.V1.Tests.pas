@@ -200,8 +200,6 @@ var
   InserUserCommand: Mock<IInsertUserCommand>;
   DeleteUserCommand: Mock<IDeleteUserCommand>;
 
-  Logger: Mock<ILogger>;
-
   UserRole: Mock<IUserRoleAndPermissions>;
 
   ExpectedItems: IReadOnlyList<ILoginDbUserRecord>;
@@ -218,7 +216,7 @@ begin
 
   UserRole := Mock<IUserRoleAndPermissions>.Create;
   UserRole.Setup.Returns<string>('user').When.Role;
-  UserRole.Setup.Returns<IReadonlyList<string>>(TCollections.CreateList<string>(['perm1', 'perm2']).AsReadOnlyList).When.Permissions;
+  UserRole.Setup.Returns<IReadonlyList<Permission>>(TCollections.CreateList<Permission>([Permission.CanChangeUserState, Permission.CanSetUserRole]).AsReadOnly).When.Permissions;
 
   AuthorizationV1ApiClient := Mock<IAuthorizationV1ApiClient>.Create;
   AuthorizationV1ApiClient.Setup.Returns<IUserRoleAndPermissions>(UserRole).When.GetRole;
@@ -252,7 +250,7 @@ begin
   UpdateStatusCommand := Mock<IUpdateActiveStatusCommand>.Create;
   GetUserQuery := Mock<IGetUserByUsernameAndHashedPasswordQuery>.Create;
 
-  ExpectedItems := TCollections.CreateList<ILoginDbUserRecord>([]).AsReadOnlyList;
+  ExpectedItems := TCollections.CreateList<ILoginDbUserRecord>([]).AsReadOnly;
 
   GetUserQuery.Setup.Returns<IReadonlyList<ILoginDbUserRecord>>(ExpectedItems).When.Open(Username, THashMD5.GetHashString(Password));
 
@@ -275,9 +273,7 @@ begin
     end,
     ServerTokensCache);
 
-  Resource := TLoginV1ApiServerController.Create(
-    Logger,
-    UseCase);
+  Resource := TLoginV1ApiServerController.Create(UseCase);
 
   Assert.WillRaise(
     procedure
@@ -317,8 +313,6 @@ var
   InserUserCommand: Mock<IInsertUserCommand>;
   DeleteUserCommand: Mock<IDeleteUserCommand>;
 
-  Logger: Mock<ILogger>;
-
   UserRole: Mock<IUserRoleAndPermissions>;
 
   UserRecord: Mock<ILoginDbUserRecord>;
@@ -336,7 +330,7 @@ begin
 
   UserRole := Mock<IUserRoleAndPermissions>.Create;
   UserRole.Setup.Returns<string>('user').When.Role;
-  UserRole.Setup.Returns<IReadonlyList<string>>(TCollections.CreateList<string>(['perm1', 'perm2']).AsReadOnlyList).When.Permissions;
+  UserRole.Setup.Returns<IReadonlyList<Permission>>(TCollections.CreateList<Permission>([Permission.CanChangeUserState, Permission.CanSetUserRole]).AsReadOnly).When.Permissions;
 
   AuthorizationV1ApiClient := Mock<IAuthorizationV1ApiClient>.Create;
   AuthorizationV1ApiClient.Setup.Returns<IUserRoleAndPermissions>(UserRole).When.GetRole;
@@ -377,7 +371,7 @@ begin
   UserRecord.Setup.Returns<string>(Username).When.Username;
   UserRecord.Setup.Returns<string>(THashMD5.GetHashString(Password)).When.HashedPassword;
 
-  ExpectedItems := TCollections.CreateList<ILoginDbUserRecord>([UserRecord]).AsReadOnlyList;
+  ExpectedItems := TCollections.CreateList<ILoginDbUserRecord>([UserRecord]).AsReadOnly;
 
   GetUserQuery.Setup.Returns<IReadonlyList<ILoginDbUserRecord>>(ExpectedItems).When.Open(Username, THashMD5.GetHashString(Password));
 
@@ -400,9 +394,7 @@ begin
     end,
     ServerTokensCache);
 
-  Resource := TLoginV1ApiServerController.Create(
-    Logger,
-    UseCase);
+  Resource := TLoginV1ApiServerController.Create(UseCase);
 
   Assert.WillRaise(
     procedure
@@ -442,8 +434,6 @@ var
   InserUserCommand: Mock<IInsertUserCommand>;
   DeleteUserCommand: Mock<IDeleteUserCommand>;
 
-  Logger: Mock<ILogger>;
-
   UserRole: Mock<IUserRoleAndPermissions>;
 
   UserRecord: Mock<ILoginDbUserRecord>;
@@ -461,7 +451,7 @@ begin
 
   UserRole := Mock<IUserRoleAndPermissions>.Create;
   UserRole.Setup.Returns<string>('user').When.Role;
-  UserRole.Setup.Returns<IReadonlyList<string>>(TCollections.CreateList<string>(['perm1', 'perm2']).AsReadOnlyList).When.Permissions;
+  UserRole.Setup.Returns<IReadonlyList<Permission>>(TCollections.CreateList<Permission>([Permission.CanChangeUserState, Permission.CanSetUserRole]).AsReadOnly).When.Permissions;
 
   AuthorizationV1ApiClient := Mock<IAuthorizationV1ApiClient>.Create;
   AuthorizationV1ApiClient.Setup.Returns<IUserRoleAndPermissions>(UserRole).When.GetRole;
@@ -500,7 +490,7 @@ begin
   UserRecord.Setup.Returns<string>(Username).When.Username;
   UserRecord.Setup.Returns<string>(THashMD5.GetHashString(Password)).When.HashedPassword;
 
-  ExpectedItems := TCollections.CreateList<ILoginDbUserRecord>([UserRecord]).AsReadOnlyList;
+  ExpectedItems := TCollections.CreateList<ILoginDbUserRecord>([UserRecord]).AsReadOnly;
 
   GetUserQuery.Setup.Returns<IReadonlyList<ILoginDbUserRecord>>(ExpectedItems).When.Open(Username, THashMD5.GetHashString(Password));
 
@@ -523,9 +513,7 @@ begin
     end,
     ServerTokensCache);
 
-  Resource := TLoginV1ApiServerController.Create(
-    Logger,
-    UseCase);
+  Resource := TLoginV1ApiServerController.Create(UseCase);
 
   Assert.WillRaise(
     procedure
@@ -546,7 +534,6 @@ procedure TAuthenticationServiceIntegrationApiServersLoginV1Tests.ExecuteRaisesE
 var
   Resource: Shared<TLoginV1ApiServerController>;
   UseCase: Mock<ILoginUseCase>;
-  Logger: Mock<ILogger>;
 
   Username: string;
   Password: string;
@@ -562,16 +549,14 @@ begin
       raise EAuthenticationServiceIntegrationApiServersLoginV1Tests.Create('Error Message');
     end)).When.Run(Arg.IsAny<TUser>);
 
-  Resource := TLoginV1ApiServerController.Create(
-    Logger,
-    UseCase);
+  Resource := TLoginV1ApiServerController.Create(UseCase);
 
   Assert.WillRaise(
     procedure
     begin
       Resource.Value.Execute(JSONUnmarshaller.To<ILoginParams>(Format('{"username": "%s", "password": "%s"}', [Username, Password])), Authorization, RefreshToken);
     end,
-    EApiServer500);
+    EAuthenticationServiceIntegrationApiServersLoginV1Tests);
 end;
 
 procedure TAuthenticationServiceIntegrationApiServersLoginV1Tests.ExecuteRaisesEApiServer401WhenRefreshTokenCannotBeCreated;
@@ -597,8 +582,6 @@ var
   InserUserCommand: Mock<IInsertUserCommand>;
   DeleteUserCommand: Mock<IDeleteUserCommand>;
 
-  Logger: Mock<ILogger>;
-
   UserRole: Mock<IUserRoleAndPermissions>;
 
   UserRecord: Mock<ILoginDbUserRecord>;
@@ -616,7 +599,7 @@ begin
 
   UserRole := Mock<IUserRoleAndPermissions>.Create;
   UserRole.Setup.Returns<string>('user').When.Role;
-  UserRole.Setup.Returns<IReadonlyList<string>>(TCollections.CreateList<string>(['perm1', 'perm2']).AsReadOnlyList).When.Permissions;
+  UserRole.Setup.Returns<IReadonlyList<Permission>>(TCollections.CreateList<Permission>([Permission.CanChangeUserState, Permission.CanSetUserRole]).AsReadOnly).When.Permissions;
 
   AuthorizationV1ApiClient := Mock<IAuthorizationV1ApiClient>.Create;
   AuthorizationV1ApiClient.Setup.Returns<IUserRoleAndPermissions>(UserRole).When.GetRole;
@@ -655,7 +638,7 @@ begin
   UserRecord.Setup.Returns<string>(Username).When.Username;
   UserRecord.Setup.Returns<string>(THashMD5.GetHashString(Password)).When.HashedPassword;
 
-  ExpectedItems := TCollections.CreateList<ILoginDbUserRecord>([UserRecord]).AsReadOnlyList;
+  ExpectedItems := TCollections.CreateList<ILoginDbUserRecord>([UserRecord]).AsReadOnly;
 
   GetUserQuery.Setup.Returns<IReadonlyList<ILoginDbUserRecord>>(ExpectedItems).When.Open(Username, THashMD5.GetHashString(Password));
 
@@ -678,9 +661,7 @@ begin
     end,
     ServerTokensCache);
 
-  Resource := TLoginV1ApiServerController.Create(
-    Logger,
-    UseCase);
+  Resource := TLoginV1ApiServerController.Create(UseCase);
 
   Assert.WillRaise(
     procedure
@@ -720,8 +701,6 @@ var
   InserUserCommand: Mock<IInsertUserCommand>;
   DeleteUserCommand: Mock<IDeleteUserCommand>;
 
-  Logger: Mock<ILogger>;
-
   UserRole: Mock<IUserRoleAndPermissions>;
 
   UserRecord: Mock<ILoginDbUserRecord>;
@@ -739,7 +718,7 @@ begin
 
   UserRole := Mock<IUserRoleAndPermissions>.Create;
   UserRole.Setup.Returns<string>('user').When.Role;
-  UserRole.Setup.Returns<IReadonlyList<string>>(TCollections.CreateList<string>(['perm1', 'perm2']).AsReadOnlyList).When.Permissions;
+  UserRole.Setup.Returns<IReadonlyList<Permission>>(TCollections.CreateList<Permission>([Permission.CanChangeUserState, Permission.CanSetUserRole]).AsReadOnly).When.Permissions;
 
   AuthorizationV1ApiClient := Mock<IAuthorizationV1ApiClient>.Create;
   AuthorizationV1ApiClient.Setup.Returns<IUserRoleAndPermissions>(UserRole).When.GetRole;
@@ -778,7 +757,7 @@ begin
   UserRecord.Setup.Returns<string>(Username).When.Username;
   UserRecord.Setup.Returns<string>(THashMD5.GetHashString(Password)).When.HashedPassword;
 
-  ExpectedItems := TCollections.CreateList<ILoginDbUserRecord>([UserRecord]).AsReadOnlyList;
+  ExpectedItems := TCollections.CreateList<ILoginDbUserRecord>([UserRecord]).AsReadOnly;
 
   GetUserQuery.Setup.Returns<IReadonlyList<ILoginDbUserRecord>>(ExpectedItems).When.Open(Username, THashMD5.GetHashString(Password));
 
@@ -801,9 +780,7 @@ begin
     end,
     ServerTokensCache);
 
-  Resource := TLoginV1ApiServerController.Create(
-    Logger,
-    UseCase);
+  Resource := TLoginV1ApiServerController.Create(UseCase);
 
   Assert.WillNotRaiseAny(
     procedure
@@ -842,8 +819,6 @@ var
   InserUserCommand: Mock<IInsertUserCommand>;
   DeleteUserCommand: Mock<IDeleteUserCommand>;
 
-  Logger: Mock<ILogger>;
-
   UserRole: Mock<IUserRoleAndPermissions>;
 
   UserRecord: Mock<ILoginDbUserRecord>;
@@ -861,7 +836,7 @@ begin
 
   UserRole := Mock<IUserRoleAndPermissions>.Create;
   UserRole.Setup.Returns<string>('user').When.Role;
-  UserRole.Setup.Returns<IReadonlyList<string>>(TCollections.CreateList<string>(['perm1', 'perm2']).AsReadOnlyList).When.Permissions;
+  UserRole.Setup.Returns<IReadonlyList<Permission>>(TCollections.CreateList<Permission>([Permission.CanChangeUserState, Permission.CanSetUserRole]).AsReadOnly).When.Permissions;
 
   AuthorizationV1ApiClient := Mock<IAuthorizationV1ApiClient>.Create;
   AuthorizationV1ApiClient.Setup.Returns<IUserRoleAndPermissions>(UserRole).When.GetRole;
@@ -900,7 +875,7 @@ begin
   UserRecord.Setup.Returns<string>(Username).When.Username;
   UserRecord.Setup.Returns<string>(THashMD5.GetHashString(Password)).When.HashedPassword;
 
-  ExpectedItems := TCollections.CreateList<ILoginDbUserRecord>([UserRecord]).AsReadOnlyList;
+  ExpectedItems := TCollections.CreateList<ILoginDbUserRecord>([UserRecord]).AsReadOnly;
 
   GetUserQuery.Setup.Returns<IReadonlyList<ILoginDbUserRecord>>(ExpectedItems).When.Open(Username, THashMD5.GetHashString(Password));
 
@@ -923,9 +898,7 @@ begin
     end,
     ServerTokensCache);
 
-  Resource := TLoginV1ApiServerController.Create(
-    Logger,
-    UseCase);
+  Resource := TLoginV1ApiServerController.Create(UseCase);
 
   Assert.WillRaise(
     procedure
@@ -965,8 +938,6 @@ var
   InserUserCommand: Mock<IInsertUserCommand>;
   DeleteUserCommand: Mock<IDeleteUserCommand>;
 
-  Logger: Mock<ILogger>;
-
   UserRole: Mock<IUserRoleAndPermissions>;
 
   UserRecord: Mock<ILoginDbUserRecord>;
@@ -984,7 +955,7 @@ begin
 
   UserRole := Mock<IUserRoleAndPermissions>.Create;
   UserRole.Setup.Returns<string>('user').When.Role;
-  UserRole.Setup.Returns<IReadonlyList<string>>(TCollections.CreateList<string>(['perm1', 'perm2']).AsReadOnlyList).When.Permissions;
+  UserRole.Setup.Returns<IReadonlyList<Permission>>(TCollections.CreateList<Permission>([Permission.CanChangeUserState, Permission.CanSetUserRole]).AsReadOnly).When.Permissions;
 
   AuthorizationV1ApiClient := Mock<IAuthorizationV1ApiClient>.Create;
   AuthorizationV1ApiClient.Setup.Returns<IUserRoleAndPermissions>(UserRole).When.GetRole;
@@ -1023,7 +994,7 @@ begin
   UserRecord.Setup.Returns<string>(Username).When.Username;
   UserRecord.Setup.Returns<string>(THashMD5.GetHashString(Password)).When.HashedPassword;
 
-  ExpectedItems := TCollections.CreateList<ILoginDbUserRecord>([UserRecord]).AsReadOnlyList;
+  ExpectedItems := TCollections.CreateList<ILoginDbUserRecord>([UserRecord]).AsReadOnly;
 
   GetUserQuery.Setup.Returns<IReadonlyList<ILoginDbUserRecord>>(ExpectedItems).When.Open(Username, THashMD5.GetHashString(Password));
 
@@ -1046,9 +1017,7 @@ begin
     end,
     ServerTokensCache);
 
-  Resource := TLoginV1ApiServerController.Create(
-    Logger,
-    UseCase);
+  Resource := TLoginV1ApiServerController.Create(UseCase);
 
   Assert.WillRaise(
     procedure
@@ -1088,8 +1057,6 @@ var
   InserUserCommand: Mock<IInsertUserCommand>;
   DeleteUserCommand: Mock<IDeleteUserCommand>;
 
-  Logger: Mock<ILogger>;
-
   UserRole: Mock<IUserRoleAndPermissions>;
 
   UserRecord: Mock<ILoginDbUserRecord>;
@@ -1107,7 +1074,7 @@ begin
 
   UserRole := Mock<IUserRoleAndPermissions>.Create;
   UserRole.Setup.Returns<string>('user').When.Role;
-  UserRole.Setup.Returns<IReadonlyList<string>>(TCollections.CreateList<string>(['perm1', 'perm2']).AsReadOnlyList).When.Permissions;
+  UserRole.Setup.Returns<IReadonlyList<Permission>>(TCollections.CreateList<Permission>([Permission.CanChangeUserState, Permission.CanSetUserRole]).AsReadOnly).When.Permissions;
 
   AuthorizationV1ApiClient := Mock<IAuthorizationV1ApiClient>.Create;
   AuthorizationV1ApiClient.Setup.Returns<IUserRoleAndPermissions>(UserRole).When.GetRole;
@@ -1146,7 +1113,7 @@ begin
   UserRecord.Setup.Returns<string>(Username).When.Username;
   UserRecord.Setup.Returns<string>(THashMD5.GetHashString(Password)).When.HashedPassword;
 
-  ExpectedItems := TCollections.CreateList<ILoginDbUserRecord>([UserRecord]).AsReadOnlyList;
+  ExpectedItems := TCollections.CreateList<ILoginDbUserRecord>([UserRecord]).AsReadOnly;
 
   GetUserQuery.Setup.Returns<IReadonlyList<ILoginDbUserRecord>>(ExpectedItems).When.Open(Username, THashMD5.GetHashString(Password));
 
@@ -1169,9 +1136,7 @@ begin
     end,
     ServerTokensCache);
 
-  Resource := TLoginV1ApiServerController.Create(
-    Logger,
-    UseCase);
+  Resource := TLoginV1ApiServerController.Create(UseCase);
 
   Assert.WillRaise(
     procedure
@@ -1210,8 +1175,6 @@ var
   GetUserQuery: Mock<IGetUserByUsernameAndHashedPasswordQuery>;
   InserUserCommand: Mock<IInsertUserCommand>;
   DeleteUserCommand: Mock<IDeleteUserCommand>;
-
-  Logger: Mock<ILogger>;
 
   UserRecord: Mock<ILoginDbUserRecord>;
   ExpectedItems: IReadOnlyList<ILoginDbUserRecord>;
@@ -1263,7 +1226,7 @@ begin
   UserRecord.Setup.Returns<string>(Username).When.Username;
   UserRecord.Setup.Returns<string>(THashMD5.GetHashString(Password)).When.HashedPassword;
 
-  ExpectedItems := TCollections.CreateList<ILoginDbUserRecord>([UserRecord]).AsReadOnlyList;
+  ExpectedItems := TCollections.CreateList<ILoginDbUserRecord>([UserRecord]).AsReadOnly;
 
   GetUserQuery.Setup.Returns<IReadonlyList<ILoginDbUserRecord>>(ExpectedItems).When.Open(Username, THashMD5.GetHashString(Password));
 
@@ -1286,9 +1249,7 @@ begin
     end,
     ServerTokensCache);
 
-  Resource := TLoginV1ApiServerController.Create(
-    Logger,
-    UseCase);
+  Resource := TLoginV1ApiServerController.Create(UseCase);
 
   Assert.WillRaise(
     procedure
@@ -1328,8 +1289,6 @@ var
   InserUserCommand: Mock<IInsertUserCommand>;
   DeleteUserCommand: Mock<IDeleteUserCommand>;
 
-  Logger: Mock<ILogger>;
-
   UserRole: Mock<IUserRoleAndPermissions>;
 
   Username: string;
@@ -1344,7 +1303,7 @@ begin
 
   UserRole := Mock<IUserRoleAndPermissions>.Create;
   UserRole.Setup.Returns<string>('user').When.Role;
-  UserRole.Setup.Returns<IReadonlyList<string>>(TCollections.CreateList<string>(['perm1', 'perm2']).AsReadOnlyList).When.Permissions;
+  UserRole.Setup.Returns<IReadonlyList<Permission>>(TCollections.CreateList<Permission>([Permission.CanChangeUserState, Permission.CanSetUserRole]).AsReadOnly).When.Permissions;
 
   AuthorizationV1ApiClient := Mock<IAuthorizationV1ApiClient>.Create;
   AuthorizationV1ApiClient.Setup.Returns<IUserRoleAndPermissions>(UserRole).When.GetRole;
@@ -1399,9 +1358,7 @@ begin
     end,
     ServerTokensCache);
 
-  Resource := TLoginV1ApiServerController.Create(
-    Logger,
-    UseCase);
+  Resource := TLoginV1ApiServerController.Create(UseCase);
 
   Assert.WillRaise(
     procedure

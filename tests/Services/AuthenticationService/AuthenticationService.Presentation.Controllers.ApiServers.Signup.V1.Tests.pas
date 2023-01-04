@@ -58,19 +58,19 @@ type
     procedure ExecuteRaisesEApiServer400WhenDataIsNotCorrect(const Username: string; const Password: string; const FirstName: string; const LastName: string);
 
     [Test]
-    procedure ExecuteRaisesEApiServer500WhenUserCannotBeStored;
+    procedure ExecuteRaisesESignupUseCaseFailureWhenUserCannotBeStored;
 
     [Test]
-    procedure ExecuteRaisesEApiServer500WhenDatabaseRaisesAnError;
+    procedure ExecuteRaisesESignupUseCaseFailureWhenDatabaseRaisesAnError;
 
     [Test]
-    procedure ExecuteRaisesEApiServer500WhenCannotPublishEvent;
+    procedure ExecuteRaisesERemoveUseCaseFailureWhenCannotPublishEvent;
 
     [Test]
-    procedure ExecuteRaisesEApiServer500WhenUserCannotBeRemovedAfterException;
+    procedure ExecuteRaisesEUserRepositoryWhenUserCannotBeRemovedAfterException;
 
     [Test]
-    procedure ExecuteRaisesEApiServer500WhenUserCannotBeRemovedBecauseItIsNotFound;
+    procedure ExecuteRaisesEUserRepositoryWhenUserCannotBeRemovedBecauseItIsNotFound;
   end;
 
 implementation
@@ -135,7 +135,6 @@ begin
   Publisher.Setup.Returns<Context<Boolean>>(True).When.Trigger(Arg.IsAny<string>, Arg.IsAny<string>, Arg.IsAny<string>);
 
   Resource := TSignupV1ApiServerController.Create(
-    Logger,
     Signup,
     Remove,
     Publisher);
@@ -160,7 +159,7 @@ begin
   Publisher.Received(Times.Never).Trigger(Arg.IsAny<string>, Arg.IsAny<string>, Arg.IsAny<string>);
 end;
 
-procedure TAuthenticationServiceIntegrationApiServersSignupV1Tests.ExecuteRaisesEApiServer500WhenCannotPublishEvent;
+procedure TAuthenticationServiceIntegrationApiServersSignupV1Tests.ExecuteRaisesERemoveUseCaseFailureWhenCannotPublishEvent;
 var
   Resource: Shared<TSignupV1ApiServerController>;
 
@@ -223,7 +222,6 @@ begin
   Publisher.Setup.Returns<Context<Boolean>>(False).When.Trigger(Arg.IsAny<string>, Arg.IsAny<string>, Arg.IsAny<string>);
 
   Resource := TSignupV1ApiServerController.Create(
-    Logger,
     Signup,
     Remove,
     Publisher);
@@ -242,7 +240,7 @@ begin
              FirstName,
              LastName])));
     end,
-    EApiServer500);
+    ERemoveUseCaseFailure);
 
   InsertUserCommand.Received(Times.Once).Execute(Arg.IsAny<string>, Arg.IsIn<string>([Username]), Arg.IsIn<string>([THashMD5.GetHashString(Password)]));
   InsertUserCommand.Received(Times.Never).Execute(Arg.IsAny<string>, Arg.IsNotIn<string>([Username]), Arg.IsNotIn<string>([THashMD5.GetHashString(Password)]));
@@ -251,7 +249,7 @@ begin
   Publisher.Received(Times.Never).Trigger(Arg.IsNotIn<string>(['Authentication']), Arg.IsNotIn<string>(['UserAdded']), Arg.IsAny<string>);
 end;
 
-procedure TAuthenticationServiceIntegrationApiServersSignupV1Tests.ExecuteRaisesEApiServer500WhenDatabaseRaisesAnError;
+procedure TAuthenticationServiceIntegrationApiServersSignupV1Tests.ExecuteRaisesESignupUseCaseFailureWhenDatabaseRaisesAnError;
 var
   Resource: Shared<TSignupV1ApiServerController>;
 
@@ -313,7 +311,6 @@ begin
   Publisher.Setup.Returns<Context<Boolean>>(True).When.Trigger(Arg.IsAny<string>, Arg.IsAny<string>, Arg.IsAny<string>);
 
   Resource := TSignupV1ApiServerController.Create(
-    Logger,
     Signup,
     Remove,
     Publisher);
@@ -333,14 +330,14 @@ begin
            LastName]));
       Result := Resource.Value.Execute(SignupParams);
     end,
-    EApiServer500);
+    ESignupUseCaseFailure);
 
   InsertUserCommand.Received(Times.Once).Execute(Arg.IsAny<string>, Arg.IsIn<string>([Username]), Arg.IsIn<string>([THashMD5.GetHashString(Password)]));
   InsertUserCommand.Received(Times.Never).Execute(Arg.IsAny<string>, Arg.IsNotIn<string>([Username]), Arg.IsNotIn<string>([THashMD5.GetHashString(Password)]));
   Publisher.Received(Times.Never).Trigger(Arg.IsIn<string>(['Authentication']), Arg.IsIn<string>(['UserAdded']), Arg.IsAny<string>);
 end;
 
-procedure TAuthenticationServiceIntegrationApiServersSignupV1Tests.ExecuteRaisesEApiServer500WhenUserCannotBeRemovedAfterException;
+procedure TAuthenticationServiceIntegrationApiServersSignupV1Tests.ExecuteRaisesEUserRepositoryWhenUserCannotBeRemovedAfterException;
 var
   Resource: Shared<TSignupV1ApiServerController>;
 
@@ -403,7 +400,6 @@ begin
   Publisher.Setup.Returns<Context<Boolean>>(False).When.Trigger(Arg.IsAny<string>, Arg.IsAny<string>, Arg.IsAny<string>);
 
   Resource := TSignupV1ApiServerController.Create(
-    Logger,
     Signup,
     Remove,
     Publisher);
@@ -422,7 +418,7 @@ begin
              FirstName,
              LastName])));
     end,
-    EApiServer500);
+    EUserRepository);
 
   InsertUserCommand.Received(Times.Once).Execute(Arg.IsAny<string>, Arg.IsIn<string>([Username]), Arg.IsIn<string>([THashMD5.GetHashString(Password)]));
   InsertUserCommand.Received(Times.Never).Execute(Arg.IsAny<string>, Arg.IsNotIn<string>([Username]), Arg.IsNotIn<string>([THashMD5.GetHashString(Password)]));
@@ -430,7 +426,7 @@ begin
   Publisher.Received(Times.Never).Trigger(Arg.IsNotIn<string>(['Authentication']), Arg.IsNotIn<string>(['UserAdded']), Arg.IsAny<string>);
 end;
 
-procedure TAuthenticationServiceIntegrationApiServersSignupV1Tests.ExecuteRaisesEApiServer500WhenUserCannotBeRemovedBecauseItIsNotFound;
+procedure TAuthenticationServiceIntegrationApiServersSignupV1Tests.ExecuteRaisesEUserRepositoryWhenUserCannotBeRemovedBecauseItIsNotFound;
 var
   Resource: Shared<TSignupV1ApiServerController>;
 
@@ -493,7 +489,6 @@ begin
   Publisher.Setup.Returns<Context<Boolean>>(False).When.Trigger(Arg.IsAny<string>, Arg.IsAny<string>, Arg.IsAny<string>);
 
   Resource := TSignupV1ApiServerController.Create(
-    Logger,
     Signup,
     Remove,
     Publisher);
@@ -512,7 +507,7 @@ begin
              FirstName,
              LastName])));
     end,
-    EApiServer500);
+    EUserRepository);
 
   InsertUserCommand.Received(Times.Once).Execute(Arg.IsAny<string>, Arg.IsIn<string>([Username]), Arg.IsIn<string>([THashMD5.GetHashString(Password)]));
   InsertUserCommand.Received(Times.Never).Execute(Arg.IsAny<string>, Arg.IsNotIn<string>([Username]), Arg.IsNotIn<string>([THashMD5.GetHashString(Password)]));
@@ -520,7 +515,7 @@ begin
   Publisher.Received(Times.Never).Trigger(Arg.IsNotIn<string>(['Authentication']), Arg.IsNotIn<string>(['UserAdded']), Arg.IsAny<string>);
 end;
 
-procedure TAuthenticationServiceIntegrationApiServersSignupV1Tests.ExecuteRaisesEApiServer500WhenUserCannotBeStored;
+procedure TAuthenticationServiceIntegrationApiServersSignupV1Tests.ExecuteRaisesESignupUseCaseFailureWhenUserCannotBeStored;
 var
   Resource: Shared<TSignupV1ApiServerController>;
 
@@ -582,7 +577,6 @@ begin
   Publisher.Setup.Returns<Context<Boolean>>(True).When.Trigger(Arg.IsAny<string>, Arg.IsAny<string>, Arg.IsAny<string>);
 
   Resource := TSignupV1ApiServerController.Create(
-    Logger,
     Signup,
     Remove,
     Publisher);
@@ -602,7 +596,7 @@ begin
            LastName]));
       Result := Resource.Value.Execute(SignupParams);
     end,
-    EApiServer500);
+    ESignupUseCaseFailure);
 
   InsertUserCommand.Received(Times.Once).Execute(Arg.IsAny<string>, Arg.IsIn<string>([Username]), Arg.IsIn<string>([THashMD5.GetHashString(Password)]));
   InsertUserCommand.Received(Times.Never).Execute(Arg.IsAny<string>, Arg.IsNotIn<string>([Username]), Arg.IsNotIn<string>([THashMD5.GetHashString(Password)]));
@@ -673,7 +667,6 @@ begin
   Publisher.Setup.Returns<Context<Boolean>>(True).When.Trigger(Arg.IsAny<string>, Arg.IsAny<string>, Arg.IsAny<string>);
 
   Resource := TSignupV1ApiServerController.Create(
-    Logger,
     Signup,
     Remove,
     Publisher);

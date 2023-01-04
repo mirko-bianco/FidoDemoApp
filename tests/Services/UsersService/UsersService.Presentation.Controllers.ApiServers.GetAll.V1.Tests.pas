@@ -51,10 +51,10 @@ type
     procedure ExecuteReturnsUsersWhenAreAvailable;
 
     [Test]
-    procedure ExecuteRaisesEApiServer500WhenUsersAreMalformed;
+    procedure ExecuteRaisesEGetAllUseCaseFailureWhenUsersAreMalformed;
 
     [Test]
-    procedure ExecuteRaisesEApiServer500WhenUsersCannotBeReadFromGateway;
+    procedure ExecuteRaisesEGetAllUseCaseFailureWhenUsersCannotBeReadFromGateway;
 
     [Test]
     procedure ExecuteRaisesEApiServer400WhenOrderByIsMalformed;
@@ -102,7 +102,7 @@ begin
     end);
 
   Resource := TGetAllV1ApiServerController.Create(
-    Logger,
+
     UseCase);
 
   Assert.WillRaise(
@@ -118,7 +118,7 @@ begin
   GetUsersCountQuery.Received(Times.Never).Open;
 end;
 
-procedure TUsersServiceAdaptersControllersApiServersGetAllV1Tests.ExecuteRaisesEApiServer500WhenUsersAreMalformed;
+procedure TUsersServiceAdaptersControllersApiServersGetAllV1Tests.ExecuteRaisesEGetAllUseCaseFailureWhenUsersAreMalformed;
 var
   Resource: Shared<TGetAllV1ApiServerController>;
   UseCase: IGetAllUseCase;
@@ -163,7 +163,7 @@ begin
           [Id1, FirstName1, LastName1, Active1]))
     ]);
 
-  ReadOnlyList := List.AsReadOnlyList;
+  ReadOnlyList := List.AsReadOnly;
 
   GetAllUsersQuery.Setup.Returns<IReadonlyList<IUserRecord>>(ReadOnlyList).When.Open('firstname', 50, 150);
 
@@ -181,7 +181,7 @@ begin
     end);
 
   Resource := TGetAllV1ApiServerController.Create(
-    Logger,
+
     UseCase);
 
   Assert.WillRaise(
@@ -189,7 +189,7 @@ begin
     begin
       Result := Resource.Value.Execute(FirstNameAsc, 4, 50);
     end,
-    EApiServer500);
+    EGetAllUseCaseFailure);
 
   InsertUserCommand.Received(Times.Never).Execute(Arg.IsAny<string>, Arg.IsAny<string>, Arg.IsAny<string>);
   DeleteUserCommand.Received(Times.Never).Execute(Arg.IsAny<string>);
@@ -198,7 +198,7 @@ begin
   GetUsersCountQuery.Received(Times.Never).Open;
 end;
 
-procedure TUsersServiceAdaptersControllersApiServersGetAllV1Tests.ExecuteRaisesEApiServer500WhenUsersCannotBeReadFromGateway;
+procedure TUsersServiceAdaptersControllersApiServersGetAllV1Tests.ExecuteRaisesEGetAllUseCaseFailureWhenUsersCannotBeReadFromGateway;
 var
   Resource: Shared<TGetAllV1ApiServerController>;
   UseCase: IGetAllUseCase;
@@ -238,7 +238,7 @@ begin
     end);
 
   Resource := TGetAllV1ApiServerController.Create(
-    Logger,
+
     UseCase);
 
   Assert.WillRaise(
@@ -246,7 +246,7 @@ begin
     begin
       Result := Resource.Value.Execute(FirstNameAsc, 4, 50);
     end,
-    EApiServer500);
+    EGetAllUseCaseFailure);
 
   InsertUserCommand.Received(Times.Never).Execute(Arg.IsAny<string>, Arg.IsAny<string>, Arg.IsAny<string>);
   DeleteUserCommand.Received(Times.Never).Execute(Arg.IsAny<string>);
@@ -312,7 +312,7 @@ begin
           [Id2.ToString.DeQuotedString('"'), FirstName2, LastName2, Active2]))
     ]);
 
-  ReadOnlyList := List.AsReadOnlyList;
+  ReadOnlyList := List.AsReadOnly;
 
   GetAllUsersQuery.Setup.Returns<IReadonlyList<IUserRecord>>(ReadOnlyList).When.Open('firstname', 50, 150);
 
@@ -333,7 +333,7 @@ begin
     end);
 
   Resource := TGetAllV1ApiServerController.Create(
-    Logger,
+
     UseCase);
 
   Assert.WillNotRaiseAny(

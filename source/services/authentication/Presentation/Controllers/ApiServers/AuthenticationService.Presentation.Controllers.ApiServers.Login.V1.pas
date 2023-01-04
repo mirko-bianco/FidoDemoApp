@@ -6,13 +6,11 @@ uses
   System.SysUtils,
 
   Spring,
-  Spring.Logging,
 
   Fido.Utilities,
   Fido.Functional,
   Fido.Functional.Tries,
   Fido.Types,
-  Fido.Logging.Utils,
   Fido.Http.Types,
   Fido.Api.Server.Exceptions,
   Fido.Api.Server.Resource.Attributes,
@@ -37,13 +35,13 @@ type
   [Produces(mtJson)]
   TLoginV1ApiServerController = class(TObject)
   private
-    FLogger: ILogger;
     FUseCase: ILoginUseCase;
     function DoLogin(const User: Shared<TUser>): Context<TTokens>;
   public
-    constructor Create(const Logger: ILogger; const UseCase: ILoginUseCase);
+    constructor Create(const UseCase: ILoginUseCase);
 
     [Path(rmPost, '/1/login')]
+    [ResponseCode(204, 'No content')]
     procedure Execute(const [BodyParam] LoginParams: ILoginParams; out [HeaderParam] Authorization: string; out [HeaderParam(Constants.HEADER_REFRESHTOKEN)] RefreshToken: string);
   end;
   {$M-}
@@ -52,11 +50,10 @@ implementation
 
 { TLoginV1ApiServerController }
 
-constructor TLoginV1ApiServerController.Create(const Logger: ILogger; const UseCase: ILoginUseCase);
+constructor TLoginV1ApiServerController.Create(const UseCase: ILoginUseCase);
 begin
   inherited Create;
 
-  FLogger := Utilities.CheckNotNullAndSet(Logger, 'Logger');
   FUseCase := Utilities.CheckNotNullAndSet(UseCase, 'UseCase');
 end;
 
@@ -70,34 +67,20 @@ procedure TLoginV1ApiServerController.Execute(
   out Authorization: string;
   out RefreshToken: string);
 var
-  LAuthorization: string;
-  LRefreshToken: string;
+  Tokens: TTokens;
 begin
-  Logging.LogDuration(
-    FLogger,
-    ClassName,
-    'Execute',
-    procedure
-    var
-      Tokens: TTokens;
-    begin
-      Tokens := &Try<Shared<TUser>>.
-        New(TUser.Create(LoginParams.Username, LoginParams.Password)).
-        Map<TTokens>(DoLogin).
-        Match(function(const E: TObject): TTokens
-          begin
-            if E is ELoginUseCaseValidation then
-              raise EApiServer400.Create((E as Exception).Message)
-            else if E is ELoginUseCaseFailure then
-              raise EApiServer401.Create((E as Exception).Message)
-            else
-              raise EApiServer500.Create((E as Exception).Message, FLogger, ClassName, 'Execute');
-          end);
-      LAuthorization := Tokens.AccessToken;
-      LRefreshToken := Tokens.RefreshToken;
-    end);
-  Authorization := Format('Bearer %s', [LAuthorization]);
-  RefreshToken := LRefreshToken;
+  Tokens := &Try<Shared<TUser>>.
+    New(TUser.Create(LoginParams.Username, LoginParams.Password)).
+    Map<TTokens>(DoLogin).
+    Match(function(const E: Exception): Nullable<TTokens>
+      begin
+        if E is ELoginUseCaseValidation then
+          raise EApiServer400.Create(E.Message)
+        else if E is ELoginUseCaseFailure then
+          raise EApiServer401.Create(E.Message);
+      end);
+  Authorization := Format('Bearer %s', [Tokens.AccessToken]);
+  RefreshToken := Tokens.RefreshToken;
 end;
 
 end.

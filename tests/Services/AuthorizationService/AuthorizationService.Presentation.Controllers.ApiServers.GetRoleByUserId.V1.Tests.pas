@@ -53,7 +53,7 @@ type
     procedure ExecuteReturnsDefaultUserRoleWhenUserHasNoSpecificRole;
 
     [Test]
-    procedure ExecuteRaisesEApiServer500WhenUserRoleCannotBeRetrievedBecauseOfADatabaseError;
+    procedure ExecuteRaisesEGetRoleByUserIdUseCaseFailureWhenUserRoleCannotBeRetrievedBecauseOfADatabaseError;
 
     [Test]
     procedure ExecuteRaisesEApiServer401WhenTokenCannotBeVerifiedBecauseInvalid;
@@ -166,7 +166,7 @@ begin
   Rec.Setup.Returns<string>(UserId.ToString).When.UserId;
   Rec.Setup.Returns<string>('user').When.Role;
 
-  Items := TCollections.CreateList<IUserRoleRecord>([Rec]).AsReadOnlyList;
+  Items := TCollections.CreateList<IUserRoleRecord>([Rec]).AsReadOnly;
 
   GetUserRoleQuery.Setup.Returns<IReadonlyList<IUserRoleRecord>>(Items).When.Open(UserId.ToString);
 
@@ -190,7 +190,7 @@ begin
     ConvertToJWTUseCase);
 
   Resource := TGetRoleByUserIdV1ApiServerController.Create(
-    Logger,
+
     UseCase);
 
   Assert.WillRaise(
@@ -213,7 +213,7 @@ begin
   SetUserRoleCommand.Received(Times.Never).Exec(Arg.IsAny<string>, Arg.IsAny<string>);
 end;
 
-procedure TAuthorizationServiceAdaptersControllersApiServersGetRoleByUserIdV1Tests.ExecuteRaisesEApiServer500WhenUserRoleCannotBeRetrievedBecauseOfADatabaseError;
+procedure TAuthorizationServiceAdaptersControllersApiServersGetRoleByUserIdV1Tests.ExecuteRaisesEGetRoleByUserIdUseCaseFailureWhenUserRoleCannotBeRetrievedBecauseOfADatabaseError;
 var
   Resource: Shared<TGetRoleByUserIdV1ApiServerController>;
   UseCase: IGetRoleByUserIdUseCase;
@@ -259,7 +259,7 @@ begin
     ConvertToJWTUseCase);
 
   Resource := TGetRoleByUserIdV1ApiServerController.Create(
-    Logger,
+
     UseCase);
 
   Assert.WillRaise(
@@ -275,7 +275,7 @@ begin
       Authorization := JwtManager.SignTokenAndReturn(Jwt, TJOSEAlgorithmId.RS512, SIGNINGSECRET, VALIDATIONSECRET);
       Result := Resource.Value.Execute(Authorization);
     end,
-    EApiServer500);
+    EGetRoleByUserIdUseCaseFailure);
 
   GetUserRoleQuery.Received(Times.Once).Open(UserId.ToString);
   GetUserRoleQuery.Received(Times.Never).Open(Arg.IsNotIn<string>([UserId.ToString]));
@@ -312,7 +312,7 @@ begin
   Rec.Setup.Returns<string>(UserId.ToString).When.UserId;
   Rec.Setup.Returns<string>('user').When.Role;
 
-  Items := TCollections.CreateList<IUserRoleRecord>([Rec]).AsReadOnlyList;
+  Items := TCollections.CreateList<IUserRoleRecord>([Rec]).AsReadOnly;
 
   GetUserRoleQuery.Setup.Returns<IReadonlyList<IUserRoleRecord>>(Items).When.Open(UserId.ToString);
 
@@ -336,7 +336,7 @@ begin
     ConvertToJWTUseCase);
 
   Resource := TGetRoleByUserIdV1ApiServerController.Create(
-    Logger,
+
     UseCase);
 
   Assert.WillRaise(
@@ -376,7 +376,7 @@ begin
 
   GetUserRoleQuery := Mock<IGetUserRoleByUserIdQuery>.Create;
 
-  Items := TCollections.CreateList<IUserRoleRecord>([]).AsReadOnlyList;
+  Items := TCollections.CreateList<IUserRoleRecord>([]).AsReadOnly;
 
   GetUserRoleQuery.Setup.Returns<IReadonlyList<IUserRoleRecord>>(Items).When.Open(UserId.ToString);
 
@@ -400,7 +400,7 @@ begin
     ConvertToJWTUseCase);
 
   Resource := TGetRoleByUserIdV1ApiServerController.Create(
-    Logger,
+
     UseCase);
 
   Assert.WillNotRaiseAny(
@@ -452,7 +452,7 @@ begin
   Rec.Setup.Returns<string>(UserId.ToString).When.UserId;
   Rec.Setup.Returns<string>('admin').When.Role;
 
-  Items := TCollections.CreateList<IUserRoleRecord>([Rec]).AsReadOnlyList;
+  Items := TCollections.CreateList<IUserRoleRecord>([Rec]).AsReadOnly;
 
   GetUserRoleQuery.Setup.Returns<IReadonlyList<IUserRoleRecord>>(Items).When.Open(UserId.ToString);
 
@@ -476,7 +476,7 @@ begin
     ConvertToJWTUseCase);
 
   Resource := TGetRoleByUserIdV1ApiServerController.Create(
-    Logger,
+
     UseCase);
 
   Assert.WillNotRaiseAny(

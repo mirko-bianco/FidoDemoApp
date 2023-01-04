@@ -40,6 +40,7 @@ uses
   Fido.Http.Types,
   Fido.Web.Server.Null,
   Fido.Api.Server.Intf,
+  Fido.Api.Server.Brook,
   Fido.Api.Server.Indy,
   Fido.KVStore.Intf,
   Fido.KVStore.JSON,
@@ -109,24 +110,35 @@ end;
 procedure DIRegistration(const Container: TContainer);
 var
   ConsulKVStore: IKVStore;
-  IniFile: Shared<TMemIniFile>;
-  FireDacDatabaseParams: Shared<TStringList>;
+  IniFile: IShared<TMemIniFile>;
+  FireDacDatabaseParams: IShared<TStringList>;
   RedisHost: string;
   RedisPort: Integer;
 begin
-  IniFile := TMemIniFile.Create(Utils.Files.GetIniFilename);
+  IniFile := Shared.Make(TMemIniFile.Create(Utils.Files.GetIniFilename));
   Registration.RegisterFramework(Container);
 
   Fido.Consul.DI.Registration.Register(Container, IniFile);
+  Container.RegisterType<ILogAppender>(
+    function: ILogAppender
+    begin
+      Result := TPermanentFileLogAppender.Create(IniFile.ReadString('Log', 'Filename', Utils.Files.GetLogFilename));
+    end);
+
+  Container.RegisterType<ILogger>(
+    function: ILogger
+    begin
+      Result := TLogger.Create(TLoggerController.Create([Container.Resolve<ILogAppender>]));
+    end).AsSingleton;
   Container.Build;
   ConsulKVStore := Container.Resolve<IKVStore>;
 
-  FireDacDatabaseParams := TStringList.Create;
-  FireDacDatabaseParams.Value.Values['DriverID'] := ConsulKVStore.Get('database.driverid', Constants.TIMEOUT);
-  FireDacDatabaseParams.Value.Values['User_Name'] := ConsulKVStore.Get('database.username', Constants.TIMEOUT);
-  FireDacDatabaseParams.Value.Values['Password'] := ConsulKVStore.Get('database.password', Constants.TIMEOUT);
-  FireDacDatabaseParams.Value.Values['Server'] := ConsulKVStore.Get('database.server', Constants.TIMEOUT);
-  FireDacDatabaseParams.Value.Values['Port'] := ConsulKVStore.Get('database.port', Constants.TIMEOUT);
+  FireDacDatabaseParams := Shared.Make(TStringList.Create);
+  FireDacDatabaseParams.Values['DriverID'] := ConsulKVStore.Get('database.driverid', Constants.TIMEOUT);
+  FireDacDatabaseParams.Values['User_Name'] := ConsulKVStore.Get('database.username', Constants.TIMEOUT);
+  FireDacDatabaseParams.Values['Password'] := ConsulKVStore.Get('database.password', Constants.TIMEOUT);
+  FireDacDatabaseParams.Values['Server'] := ConsulKVStore.Get('database.server', Constants.TIMEOUT);
+  FireDacDatabaseParams.Values['Port'] := ConsulKVStore.Get('database.port', Constants.TIMEOUT);
 
   Container.RegisterType<TFireDacConnections>(
     function: TFireDacConnections
@@ -157,29 +169,31 @@ begin
 
   Container.RegisterType<IApiServer>(
     function: IApiServer
+    var
+      Server: IApiServer;
     begin
-      Result := TConsulAwareApiServer.Create(
-        TIndyApiServer.Create(
-          IniFile.Value.ReadInteger('Server', 'Port', 8080),
-          IniFile.Value.ReadInteger('Server', 'MaxConnections', 50),
+      if IniFile.ReadString('Server', 'Type', 'Brook') = 'Indy' then
+        Server := TIndyApiServer.Create(
+          IniFile.ReadInteger('Server', 'Port', 8080),
+          IniFile.ReadInteger('IndyServer', 'MaxConnections', 50),
           TNullWebServer.Create,
-          TSSLCertData.CreateEmpty),
+          TSSLCertData.CreateEmpty)
+      else
+        Server := TBrookApiServer.Create(
+          IniFile.ReadInteger('Server', 'Port', 8080),
+          IniFile.ReadInteger('BrookServer', 'ConnectionLimit', 50),
+          IniFile.ReadBool('BrookServer', 'Threaded', True),
+          IniFile.ReadInteger('BrookServer', 'ThreadPoolSize', 0),
+          mtJson,
+          TNullWebServer.Create,
+          TSSLCertData.CreateEmpty);
+
+      Result := TConsulAwareApiServer.Create(
+        Server,
         Container.Resolve<IConsulService>,
-        IniFile.Value.ReadString('Server', 'ServiceName', 'UsersService'),
+        IniFile.ReadString('Server', 'ServiceName', 'UsersService'),
         Constants.TIMEOUT);
     end);
-
-  Container.RegisterType<ILogAppender>(
-    function: ILogAppender
-    begin
-      Result := TPermanentFileLogAppender.Create(IniFile.Value.ReadString('Log', 'Filename', Utils.Files.GetLogFilename));
-    end);
-
-  Container.RegisterType<ILogger>(
-    function: ILogger
-    begin
-      Result := TLogger.Create(TLoggerController.Create([Container.Resolve<ILogAppender>]));
-    end).AsSingleton;
 
   RedisHost := ConsulKVStore.Get('redis.host', Constants.TIMEOUT);
   RedisPort := JSONKVStore.Get<Integer>(ConsulKVStore, 'redis.port', Constants.TIMEOUT);

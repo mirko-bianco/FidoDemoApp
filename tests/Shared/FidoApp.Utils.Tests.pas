@@ -16,6 +16,7 @@ uses
   JOSE.Types.Bytes,
 
   Spring,
+  Spring.Logging,
   Spring.Collections,
   Spring.Mocking,
 
@@ -121,7 +122,7 @@ procedure TFidoAppUtilsTests.GetAuthenticatedReturnsFalseAnd400WhenAccessTokenCa
 var
   JWTManager: Mock<IJWTManager>;
 
-  Func: TRequestMiddlewareFunc;
+  Func: TApiRequestMiddlewareFunc;
   ApiRequest: Mock<IHttpRequest>;
   HeaderParams: IDictionary<string, string>;
   ResponseCode: Integer;
@@ -137,7 +138,7 @@ begin
   HeaderParams[Constants.HEADER_AUTHORIZATION] := Format('Bearer %s', [MockUtils.SomeString]);
   HeaderParams[Constants.HEADER_REFRESHTOKEN] := MockUtils.SomeString;
   ApiRequest := Mock<IHttpRequest>.Create;
-  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnly).When.HeaderParams;
+  ApiRequest.Setup.Returns<IDictionary<string, string>>(HeaderParams).When.HeaderParams;
 
   Assert.WillNotRaiseAny(
     procedure
@@ -153,7 +154,7 @@ var
 
   Jwt: TJWT;
 
-  Func: TRequestMiddlewareFunc;
+  Func: TApiRequestMiddlewareFunc;
   ApiRequest: Mock<IHttpRequest>;
   HeaderParams: IDictionary<string, string>;
   ResponseCode: Integer;
@@ -174,7 +175,7 @@ begin
   HeaderParams[Constants.HEADER_AUTHORIZATION] := Format('somethingelse %s', [MockUtils.SomeString]);
   HeaderParams[Constants.HEADER_REFRESHTOKEN] := MockUtils.SomeString;
   ApiRequest := Mock<IHttpRequest>.Create;
-  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnly).When.HeaderParams;
+  ApiRequest.Setup.Returns<IDictionary<string, string>>(HeaderParams).When.HeaderParams;
 
   Assert.WillNotRaiseAny(
     procedure
@@ -190,7 +191,7 @@ var
 
   Jwt: TJWT;
 
-  Func: TRequestMiddlewareFunc;
+  Func: TApiRequestMiddlewareFunc;
   ApiRequest: Mock<IHttpRequest>;
   HeaderParams: IDictionary<string, string>;
   ResponseCode: Integer;
@@ -211,7 +212,7 @@ begin
   HeaderParams['Authorization'] := Format('Bearer %s', [MockUtils.SomeString]);
   HeaderParams[Constants.HEADER_REFRESHTOKEN] := MockUtils.SomeString;
   ApiRequest := Mock<IHttpRequest>.Create;
-  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnly).When.HeaderParams;
+  ApiRequest.Setup.Returns<IDictionary<string, string>>(HeaderParams).When.HeaderParams;
 
   Assert.WillNotRaiseAny(
     procedure
@@ -227,7 +228,7 @@ var
 
   Jwt: TJWT;
 
-  Func: TRequestMiddlewareFunc;
+  Func: TApiRequestMiddlewareFunc;
   ApiRequest: Mock<IHttpRequest>;
   HeaderParams: IDictionary<string, string>;
   ResponseCode: Integer;
@@ -247,7 +248,7 @@ begin
   HeaderParams['Authorization'] := Format('Bearer %s', [MockUtils.SomeString]);
   HeaderParams[Constants.HEADER_REFRESHTOKEN] := MockUtils.SomeString;
   ApiRequest := Mock<IHttpRequest>.Create;
-  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnly).When.HeaderParams;
+  ApiRequest.Setup.Returns<IDictionary<string, string>>(HeaderParams).When.HeaderParams;
 
   Assert.WillNotRaiseAny(
     procedure
@@ -266,7 +267,7 @@ var
   AccessJwt: TJWT;
   Secret: TJOSEBytes;
 
-  Func: TRequestMiddlewareFunc;
+  Func: TApiRequestMiddlewareFunc;
   ApiRequest: Mock<IHttpRequest>;
   HeaderParams: IDictionary<string, string>;
   ResponseCode: Integer;
@@ -293,7 +294,7 @@ begin
   HeaderParams['Authorization'] := Format('Bearer %s', [AccessCompactToken]);
   HeaderParams[Constants.HEADER_REFRESHTOKEN] := RefreshCompactToken;
   ApiRequest := Mock<IHttpRequest>.Create;
-  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnly).When.HeaderParams;
+  ApiRequest.Setup.Returns<IDictionary<string, string>>(HeaderParams).When.HeaderParams;
 
   Assert.WillNotRaiseAny(
     procedure
@@ -313,7 +314,7 @@ var
   RefreshJwt: TJWT;
   Secret: TJOSEBytes;
 
-  Func: TRequestMiddlewareFunc;
+  Func: TApiRequestMiddlewareFunc;
   ApiRequest: Mock<IHttpRequest>;
   HeaderParams: IDictionary<string, string>;
   ResponseCode: Integer;
@@ -345,7 +346,7 @@ begin
   HeaderParams['Authorization'] := Format('Bearer %s', [AccessCompactToken]);
   HeaderParams[Constants.HEADER_REFRESHTOKEN] := RefreshCompactToken;
   ApiRequest := Mock<IHttpRequest>.Create;
-  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnly).When.HeaderParams;
+  ApiRequest.Setup.Returns<IDictionary<string, string>>(HeaderParams).When.HeaderParams;
 
   Assert.WillNotRaiseAny(
     procedure
@@ -365,7 +366,7 @@ var
   RefreshJwt: TJWT;
   Secret: TJOSEBytes;
 
-  Func: TRequestMiddlewareFunc;
+  Func: TApiRequestMiddlewareFunc;
   ApiRequest: Mock<IHttpRequest>;
   HeaderParams: IDictionary<string, string>;
   ResponseCode: Integer;
@@ -397,7 +398,7 @@ begin
   HeaderParams['Authorization'] := Format('Bearer %s', [AccessCompactToken]);
   HeaderParams[Constants.HEADER_REFRESHTOKEN] := RefreshCompactToken;
   ApiRequest := Mock<IHttpRequest>.Create;
-  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnly).When.HeaderParams;
+  ApiRequest.Setup.Returns<IDictionary<string, string>>(HeaderParams).When.HeaderParams;
 
   Assert.WillNotRaiseAny(
     procedure
@@ -417,7 +418,7 @@ var
   RefreshJwt: TJWT;
   Secret: TJOSEBytes;
 
-  Func: TRequestMiddlewareFunc;
+  Func: TApiRequestMiddlewareFunc;
   ApiRequest: Mock<IHttpRequest>;
   HeaderParams: IDictionary<string, string>;
   ResponseCode: Integer;
@@ -448,7 +449,7 @@ begin
   HeaderParams['Authorization'] := Format('Bearer %s', [AccessCompactToken]);
   HeaderParams[Constants.HEADER_REFRESHTOKEN] := RefreshCompactToken;
   ApiRequest := Mock<IHttpRequest>.Create;
-  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnly).When.HeaderParams;
+  ApiRequest.Setup.Returns<IDictionary<string, string>>(HeaderParams).When.HeaderParams;
 
   Assert.WillNotRaiseAny(
     procedure
@@ -464,7 +465,7 @@ var
 
   Jwt: TJWT;
 
-  Func: TRequestMiddlewareFunc;
+  Func: TApiRequestMiddlewareFunc;
   ApiRequest: Mock<IHttpRequest>;
   HeaderParams: IDictionary<string, string>;
   ResponseCode: Integer;
@@ -485,7 +486,7 @@ begin
   HeaderParams['Authorization'] := Format('Bearer %s', [MockUtils.SomeString]);
   HeaderParams[Constants.HEADER_REFRESHTOKEN] := MockUtils.SomeString;
   ApiRequest := Mock<IHttpRequest>.Create;
-  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnly).When.HeaderParams;
+  ApiRequest.Setup.Returns<IDictionary<string, string>>(HeaderParams).When.HeaderParams;
 
   Assert.WillNotRaiseAny(
     procedure
@@ -502,7 +503,7 @@ var
   ExpiredAccessJwt: TJWT;
   RefreshJwt: TJWT;
 
-  Func: TRequestMiddlewareFunc;
+  Func: TApiRequestMiddlewareFunc;
   ApiRequest: Mock<IHttpRequest>;
   HeaderParams: IDictionary<string, string>;
   ResponseCode: Integer;
@@ -534,7 +535,7 @@ begin
   HeaderParams['Authorization'] := Format('Bearer %s', [MockUtils.SomeString]);
   HeaderParams[Constants.HEADER_REFRESHTOKEN] := MockUtils.SomeString;
   ApiRequest := Mock<IHttpRequest>.Create;
-  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnly).When.HeaderParams;
+  ApiRequest.Setup.Returns<IDictionary<string, string>>(HeaderParams).When.HeaderParams;
 
   Assert.WillNotRaiseAny(
     procedure
@@ -551,7 +552,7 @@ var
   ExpiredAccessJwt: TJWT;
   RefreshJwt: TJWT;
 
-  Func: TRequestMiddlewareFunc;
+  Func: TApiRequestMiddlewareFunc;
   ApiRequest: Mock<IHttpRequest>;
   HeaderParams: IDictionary<string, string>;
   ResponseCode: Integer;
@@ -585,7 +586,7 @@ begin
   HeaderParams['Authorization'] := Format('Bearer %s', [MockUtils.SomeString]);
   HeaderParams[Constants.HEADER_REFRESHTOKEN] := MockUtils.SomeString;
   ApiRequest := Mock<IHttpRequest>.Create;
-  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnly).When.HeaderParams;
+  ApiRequest.Setup.Returns<IDictionary<string, string>>(HeaderParams).When.HeaderParams;
 
   Assert.WillNotRaiseAny(
     procedure
@@ -600,7 +601,7 @@ var
 
   Jwt: TJWT;
 
-  Func: TRequestMiddlewareFunc;
+  Func: TApiRequestMiddlewareFunc;
   ApiRequest: Mock<IHttpRequest>;
   HeaderParams: IDictionary<string, string>;
   ResponseCode: Integer;
@@ -621,7 +622,7 @@ begin
   HeaderParams['Authorization'] := Format('Bearer %s', [MockUtils.SomeString]);
   HeaderParams[Constants.HEADER_REFRESHTOKEN] := MockUtils.SomeString;
   ApiRequest := Mock<IHttpRequest>.Create;
-  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnly).When.HeaderParams;
+  ApiRequest.Setup.Returns<IDictionary<string, string>>(HeaderParams).When.HeaderParams;
 
   Assert.WillNotRaiseAny(
     procedure
@@ -634,7 +635,7 @@ procedure TFidoAppUtilsTests.GetAuthorizedReturnsFalseAnd400WhenTokenDoesNotStar
 var
   GetUserRoleFunc: TGetUserRoleFunc;
 
-  Func: TRequestMiddlewareFunc;
+  Func: TApiRequestMiddlewareFunc;
   ApiRequest: Mock<IHttpRequest>;
   HeaderParams: IDictionary<string, string>;
   ResponseCode: Integer;
@@ -652,7 +653,7 @@ begin
   HeaderParams['Authorization'] := Format('somethingelse %s', [MockUtils.SomeString]);
   HeaderParams[Constants.HEADER_REFRESHTOKEN] := MockUtils.SomeString;
   ApiRequest := Mock<IHttpRequest>.Create;
-  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnly).When.HeaderParams;
+  ApiRequest.Setup.Returns<IDictionary<string, string>>(HeaderParams).When.HeaderParams;
 
   Assert.WillNotRaiseAny(
     procedure
@@ -666,7 +667,7 @@ procedure TFidoAppUtilsTests.GetAuthorizedReturnsFalseAnd401WhenAuthFuncRaisesAn
 var
   GetUserRoleFunc: TGetUserRoleFunc;
 
-  Func: TRequestMiddlewareFunc;
+  Func: TApiRequestMiddlewareFunc;
   ApiRequest: Mock<IHttpRequest>;
   HeaderParams: IDictionary<string, string>;
   ResponseCode: Integer;
@@ -684,7 +685,7 @@ begin
   HeaderParams['Authorization'] := Format('Bearer %s', [MockUtils.SomeString]);
   HeaderParams[Constants.HEADER_REFRESHTOKEN] := MockUtils.SomeString;
   ApiRequest := Mock<IHttpRequest>.Create;
-  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnly).When.HeaderParams;
+  ApiRequest.Setup.Returns<IDictionary<string, string>>(HeaderParams).When.HeaderParams;
 
   Assert.WillNotRaiseAny(
     procedure
@@ -698,45 +699,7 @@ procedure TFidoAppUtilsTests.GetAuthorizedReturnsFalseAnd403WhenUserHasNoPermiss
 var
   GetUserRoleFunc: TGetUserRoleFunc;
 
-  Func: TRequestMiddlewareFunc;
-  ApiRequest: Mock<IHttpRequest>;
-  HeaderParams: IDictionary<string, string>;
-  ResponseCode: Integer;
-  ResponseText: string;
-begin
-  GetUserRoleFunc :=
-    function(const Authorization: string; const RefreshToken: string): IUserRoleAndPermissions
-    var
-      UserRole: Mock<IUserRoleAndPermissions>;
-    begin
-      UserRole := Mock<IUserRoleAndPermissions>.Create;
-      UserRole.Setup.Returns<string>('user').When.Role;
-      UserRole.Setup.Returns<IReadonlyList<string>>(TCollections.CreateList<string>(['CanDoThis', 'CanDoThat']).AsReadOnly).When.Permissions;
-
-      Result := UserRole;
-    end;
-
-  Func := Utils.Apis.Server.Middlewares.GetAuthorized(GetUserRoleFunc);
-
-  HeaderParams := TCollections.CreateDictionary<string, string>;
-  HeaderParams['Authorization'] := Format('Bearer %s', [MockUtils.SomeString]);
-  HeaderParams[Constants.HEADER_REFRESHTOKEN] := MockUtils.SomeString;
-  ApiRequest := Mock<IHttpRequest>.Create;
-  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnly).When.HeaderParams;
-
-  Assert.WillNotRaiseAny(
-    procedure
-    begin
-      Assert.AreEqual(False, Func('CantDoShit', ApiRequest, ResponseCode, ResponseText), 'Func(''CantDoShit'', ApiRequest, ResponseCode, ResponseText)');
-    end);
-  Assert.AreEqual(403, ResponseCode, 'ResponseCode');
-end;
-
-procedure TFidoAppUtilsTests.GetAuthorizedReturnsTrueWhenUserIsAuthorized;
-var
-  GetUserRoleFunc: TGetUserRoleFunc;
-
-  Func: TRequestMiddlewareFunc;
+  Func: TApiRequestMiddlewareFunc;
   ApiRequest: Mock<IHttpRequest>;
   HeaderParams: IDictionary<string, string>;
   ResponseCode: Integer;
@@ -760,7 +723,45 @@ begin
   HeaderParams['Authorization'] := Format('Bearer %s', [MockUtils.SomeString]);
   HeaderParams[Constants.HEADER_REFRESHTOKEN] := MockUtils.SomeString;
   ApiRequest := Mock<IHttpRequest>.Create;
-  ApiRequest.Setup.Returns<IReadonlyDictionary<string, string>>(HeaderParams.AsReadOnly).When.HeaderParams;
+  ApiRequest.Setup.Returns<IDictionary<string, string>>(HeaderParams).When.HeaderParams;
+
+  Assert.WillNotRaiseAny(
+    procedure
+    begin
+      Assert.AreEqual(False, Func('CantDoShit', ApiRequest, ResponseCode, ResponseText), 'Func(''CantDoShit'', ApiRequest, ResponseCode, ResponseText)');
+    end);
+  Assert.AreEqual(403, ResponseCode, 'ResponseCode');
+end;
+
+procedure TFidoAppUtilsTests.GetAuthorizedReturnsTrueWhenUserIsAuthorized;
+var
+  GetUserRoleFunc: TGetUserRoleFunc;
+
+  Func: TApiRequestMiddlewareFunc;
+  ApiRequest: Mock<IHttpRequest>;
+  HeaderParams: IDictionary<string, string>;
+  ResponseCode: Integer;
+  ResponseText: string;
+begin
+  GetUserRoleFunc :=
+    function(const Authorization: string; const RefreshToken: string): IUserRoleAndPermissions
+    var
+      UserRole: Mock<IUserRoleAndPermissions>;
+    begin
+      UserRole := Mock<IUserRoleAndPermissions>.Create;
+      UserRole.Setup.Returns<string>('user').When.Role;
+      UserRole.Setup.Returns<IReadonlyList<Permission>>(TCollections.CreateList<Permission>([Permission.CanChangeUserState, Permission.CanSetUserRole]).AsReadOnly).When.Permissions;
+
+      Result := UserRole;
+    end;
+
+  Func := Utils.Apis.Server.Middlewares.GetAuthorized(GetUserRoleFunc);
+
+  HeaderParams := TCollections.CreateDictionary<string, string>;
+  HeaderParams['Authorization'] := Format('Bearer %s', [MockUtils.SomeString]);
+  HeaderParams[Constants.HEADER_REFRESHTOKEN] := MockUtils.SomeString;
+  ApiRequest := Mock<IHttpRequest>.Create;
+  ApiRequest.Setup.Returns<IDictionary<string, string>>(HeaderParams).When.HeaderParams;
 
   Assert.WillNotRaiseAny(
     procedure
@@ -832,15 +833,16 @@ procedure TFidoAppUtilsTests.TestUtilsApisServerMiddlewaresRegister;
 var
   ApiServer: Mock<IApiServer>;
   JwtManager: Mock<IJwtManager>;
-
+  Logger: Mock<ILogger>;
 begin
   ApiServer := Mock<IApiServer>.Create;
   JwtManager := Mock<IJwtManager>.Create;
+  Logger := Mock<ILogger>.Create;
 
   Assert.WillNotRaiseAny(
     procedure
     begin
-      Utils.Apis.Server.Middlewares.Register(ApiServer, JwtManager, MockUtils.SomeString, nil, nil);
+      Utils.Apis.Server.Middlewares.Register(ApiServer, Logger, JwtManager, MockUtils.SomeString, nil, nil);
     end);
 end;
 

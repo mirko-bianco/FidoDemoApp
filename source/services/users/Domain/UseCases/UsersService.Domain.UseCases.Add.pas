@@ -62,9 +62,9 @@ begin
     New(&Try<TUser>.
       New(User).
       Map<TUser>(Validate).
-      Match(function(const E: TObject): TUser
+      Match(function(const E: Exception): Nullable<TUser>
         begin
-          raise EAddUseCaseValidation.Create((E as Exception).Message);
+          raise EAddUseCaseValidation.Create(E.Message);
         end)).
     Map<Void>(DoAddUser).
     Match(EAddUseCaseFailure);

@@ -1,10 +1,9 @@
 program UsersService;
 
 {$APPTYPE CONSOLE}
+{$STRONGLINKTYPES ON}
 
 {$R *.res}
-
-
 {$R 'UsersService.Queries.res' 'UsersService.Queries.rc'}
 
 uses
@@ -90,6 +89,7 @@ begin
     try
       Utils.Apis.Server.Middlewares.Register(
         Server,
+        Container.Value.Resolve<ILogger>,
         Container.Value.Resolve<IJWTManager>,
         ConsulKVStore.Get('public.key', Constants.TIMEOUT),
         function(const CurrentRefreshToken: string; out AccessToken: string; out RefreshToken: string): Boolean
@@ -124,6 +124,7 @@ begin
 
       Server.SetActive(True);
 
+      EventsDrivenSubscriber.RegisterGlobalMiddleware(Utils.Consumers.Middlewares.GetLogged(Container.Value.Resolve<ILogger>));
       EventsDrivenSubscriber.RegisterConsumer(Container.Value.Resolve<TAddUserConsumerController>);
       EventsDrivenSubscriber.RegisterConsumer(Container.Value.Resolve<TRemoveUserConsumerController>);
 

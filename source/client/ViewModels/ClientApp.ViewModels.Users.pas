@@ -64,7 +64,7 @@ type
     procedure NotifySuccededGetAllUsers;
     function DoGetAll(const Params: TGetAllInputParams): Context<IGetAllUsersV1Result>;
     function DoUpdateAndNotify(const Param: IGetAllUsersV1Result): IGetAllUsersV1Result;
-    function OnException(const E: TObject): IGetAllUsersV1Result;
+    function OnException(const E: Exception): Nullable<IGetAllUsersV1Result>;
 
   public
     constructor Create(const Publisher: IEventsDrivenPublisher; const GetAllUsersUseCase: IGetAllUsersUseCase);
@@ -204,10 +204,13 @@ begin
   NotifySuccededGetAllUsers;
 end;
 
-function TUsersViewModel.OnException(const E: TObject): IGetAllUsersV1Result;
+function TUsersViewModel.OnException(const E: Exception): Nullable<IGetAllUsersV1Result>;
 begin
   if E.InheritsFrom(EFidoClientApiException) then
+  begin
     NotifyFailedGetAllUsers(Format('%d: %s', [(E as EFidoClientApiException).ErrorCode, (E as EFidoClientApiException).ErrorMessage]));
+  end;
+  Result := Nullable<IGetAllUsersV1Result>.Create(nil);
 end;
 
 function TUsersViewModel.Run: Context<Void>;

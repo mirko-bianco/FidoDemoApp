@@ -6,13 +6,11 @@ uses
   System.SysUtils,
 
   Spring,
-  Spring.Logging,
 
   Fido.Types,
   Fido.Functional,
   Fido.Functional.Tries,
   Fido.Utilities,
-  Fido.Logging.Utils,
   Fido.Http.Types,
   Fido.Api.Server.Exceptions,
   Fido.Api.Server.Resource.Attributes,
@@ -29,11 +27,10 @@ type
   [Produces(mtJson)]
   TGetRoleByUserIdV1ApiServerController = class(TObject)
   private
-    FLogger: ILogger;
     FGetRoleByUserIdUseCase: IGetRoleByUserIdUseCase;
     function DoGetRole(const Authorization: string): Context<TUserRoleAndPermissions>;
   public
-    constructor Create(const Logger: ILogger; const GetRoleByUserIdUseCase: IGetRoleByUserIdUseCase);
+    constructor Create(const GetRoleByUserIdUseCase: IGetRoleByUserIdUseCase);
 
     [Path(rmGet, '/1/role')]
     [RequestMiddleware('Authenticated')]
@@ -46,13 +43,10 @@ implementation
 
 { TGetRoleByUserIdV1ApiServerController }
 
-constructor TGetRoleByUserIdV1ApiServerController.Create(
-  const Logger: ILogger;
-  const GetRoleByUserIdUseCase: IGetRoleByUserIdUseCase);
+constructor TGetRoleByUserIdV1ApiServerController.Create(const GetRoleByUserIdUseCase: IGetRoleByUserIdUseCase);
 begin
   inherited Create;
 
-  FLogger := Utilities.CheckNotNullAndSet(Logger, 'Logger');
   FGetRoleByUserIdUseCase := Utilities.CheckNotNullAndSet(GetRoleByUserIdUseCase, 'GetRoleByUserIdUseCase');
 end;
 
@@ -63,23 +57,14 @@ end;
 
 function TGetRoleByUserIdV1ApiServerController.Execute(const Authorization: string): TUserRoleAndPermissions;
 begin
-  Result := Logging.LogDuration<TUserRoleAndPermissions>(
-    FLogger,
-    ClassName,
-    'GetRoleByUserId',
-    function: TUserRoleAndPermissions
-    begin
-      Result := &Try<string>.
-        New(Authorization).
-        Map<TUserRoleAndPermissions>(DoGetRole).
-        Match(function(const E: TObject): TUserRoleAndPermissions
-          begin
-            if E is EGetRoleByUserIdUseCaseUnauthorized then
-              raise EApiServer401.Create((E as Exception).Message)
-            else
-              raise EApiServer500.Create((E as Exception).Message, FLogger, ClassName, 'GetRoleByUserId');
-          end);
-    end);
+  Result := &Try<string>.
+    New(Authorization).
+    Map<TUserRoleAndPermissions>(DoGetRole).
+    Match(function(const E: Exception): Nullable<TUserRoleAndPermissions>
+      begin
+        if E is EGetRoleByUserIdUseCaseUnauthorized then
+          raise EApiServer401.Create(E.Message);
+      end);
 end;
 
 end.

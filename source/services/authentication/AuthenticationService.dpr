@@ -1,10 +1,9 @@
 program AuthenticationService;
 
 {$APPTYPE CONSOLE}
+{$STRONGLINKTYPES ON}
 
 {$R *.res}
-
-
 {$R 'AuthenticationService.Queries.res' 'AuthenticationService.Queries.rc'}
 
 uses
@@ -24,6 +23,7 @@ uses
   Fido.KVStore.Intf,
   Fido.JSON.Marshalling,
   Fido.EventsDriven.Subscriber.Intf,
+  Fido.Api.Client.Consul.KVStore.V1.Intf,
   FidoApp.Constants,
   FidoApp.Utils,
   FidoApp.Types,
@@ -140,6 +140,7 @@ begin
     try
       Utils.Apis.Server.Middlewares.Register(
         Server,
+        Container.Value.Resolve<ILogger>,
         Container.Value.Resolve<IJWTManager>,
         Container.Value.Resolve<IKVStore>.Get('public.key', Constants.TIMEOUT),
         function(const CurrentRefreshToken: string; out AccessToken: string; out RefreshToken: string): Boolean
@@ -173,6 +174,7 @@ begin
       Server.RegisterResource(Container.Value.Resolve<TChangeActiveStatusV1ApiServerController>);
       Server.SetActive(True);
 
+      EventsDrivenSubscriber.RegisterGlobalMiddleware(Utils.Consumers.Middlewares.GetLogged(Container.Value.Resolve<ILogger>));
       EventsDrivenSubscriber.RegisterConsumer(Container.Value.Resolve<TCancelSignupConsumerController>);
       EventsDrivenSubscriber.RegisterConsumer(Container.Value.Resolve<TActivateUserConsumerController>);
 

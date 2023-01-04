@@ -23,8 +23,10 @@ type
   public
     [Path(rmGet, '/health')]
     [ConsulHealthCheck]
+    [ExcludeGlobalMiddleware]
     function Default: TResult<string>;
   end;
+  {$M-}
 
 implementation
 

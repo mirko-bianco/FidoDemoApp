@@ -6,14 +6,12 @@ uses
   System.SysUtils,
 
   Spring,
-  Spring.Logging,
   Spring.Collections,
 
   Fido.Types,
   Fido.Utilities,
   Fido.Functional,
   Fido.Functional.Tries,
-  Fido.Logging.Utils,
   Fido.Http.Types,
   Fido.Api.Server.Exceptions,
   Fido.Api.Server.Resource.Attributes,
@@ -45,13 +43,12 @@ type
       property Offset: Integer read FOffset;
     end;
   private var
-    FLogger: ILogger;
     FUseCase: IGetAllUseCase;
 
     function DoGetAllUsers(const Params: TGetAllInputParams): Context<TGetAllV1Result>;
 
   public
-    constructor Create(const Logger: ILogger; const UseCase: IGetAllUseCase);
+    constructor Create(const UseCase: IGetAllUseCase);
 
     [Path(rmGet, '/1')]
     [RequestMiddleware('Authenticated')]
@@ -75,32 +72,20 @@ function TGetAllV1ApiServerController.Execute(
   const Page: Integer;
   const Limit: Integer): TGetAllV1Result;
 begin
-  Result := Logging.LogDuration<TGetAllV1Result>(
-    FLogger,
-    ClassName,
-    'Execute',
-    function: TGetAllV1Result
-    begin
-      Result := &Try<TGetAllInputParams>.
-        New(TGetAllInputParams.Create(OrderBy, Page, Limit)).
-        Map<TGetAllV1Result>(DoGetAllUsers).
-        Match(function(const E: TObject): TGetAllV1Result
-          begin
-            if E.InheritsFrom(EGetAllUseCaseValidation) then
-              raise EApiServer400.Create((E as Exception).Message);
-
-            raise EApiServer500.Create((E as Exception).Message, FLogger, ClassName, 'Execute');
-          end);
-    end);
+  Result := &Try<TGetAllInputParams>.
+    New(TGetAllInputParams.Create(OrderBy, Page, Limit)).
+    Map<TGetAllV1Result>(DoGetAllUsers).
+    Match(function(const E: Exception): Nullable<TGetAllV1Result>
+      begin
+        if E.InheritsFrom(EGetAllUseCaseValidation) then
+          raise EApiServer400.Create(E.Message);
+      end);
 end;
 
-constructor TGetAllV1ApiServerController.Create(
-  const Logger: ILogger;
-  const UseCase: IGetAllUseCase);
+constructor TGetAllV1ApiServerController.Create(const UseCase: IGetAllUseCase);
 begin
   inherited Create;
 
-  FLogger := Utilities.CheckNotNullAndSet(Logger, 'Logger');
   FUseCase := Utilities.CheckNotNullAndSet(UseCase, 'UseCase');
 end;
 
