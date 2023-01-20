@@ -6,12 +6,10 @@ uses
   System.SysUtils,
 
   Spring,
-  Spring.Logging,
 
   Fido.Utilities,
   Fido.Functional,
   Fido.Functional.Tries,
-  Fido.Logging.Utils,
   Fido.JSON.Marshalling,
   Fido.EventsDriven.Attributes,
   Fido.EventsDriven.Publisher.Intf,
@@ -22,14 +20,13 @@ uses
 type
   TActivateUserConsumerController = class
   private
-    FLogger: ILogger;
     FChangeActiveStatusUseCase: IChangeActiveStatusUsecase;
     FEventsPublisher: IEventsDrivenPublisher<string>;
 
-    function DoChangeStatus(const UserStatus: Shared<TUserStatus>): Context<Void>;
+    function DoChangeStatus(const UserStatus: TUserStatus): Context<Void>;
     function OnException(const UserId: TGuid): OnFailureEvent<Void>;
   public
-    constructor Create(const Logger: ILogger; const ChangeActiveStatusUseCase: IChangeActiveStatusUsecase; const EventsPublisher: IEventsDrivenPublisher<string>);
+    constructor Create(const ChangeActiveStatusUseCase: IChangeActiveStatusUsecase; const EventsPublisher: IEventsDrivenPublisher<string>);
 
     [TriggeredByEvent('Users', 'UserAdded')]
     procedure Run(const UserId: TGuid);
@@ -40,18 +37,16 @@ implementation
 { TActivateUserConsumerController }
 
 constructor TActivateUserConsumerController.Create(
-  const Logger: ILogger;
   const ChangeActiveStatusUseCase: IChangeActiveStatusUsecase;
   const EventsPublisher: IEventsDrivenPublisher<string>);
 begin
   inherited Create;
 
-  FLogger := Utilities.CheckNotNullAndSet(Logger, 'Logger');
   FChangeActiveStatusUseCase := Utilities.CheckNotNullAndSet(ChangeActiveStatusUseCase, 'ChangeActiveStatusUseCase');
   FEventsPublisher := Utilities.CheckNotNullAndSet(EventsPublisher, 'EventsPublisher');
 end;
 
-function TActivateUserConsumerController.DoChangeStatus(const UserStatus: Shared<TUserStatus>): Context<Void>;
+function TActivateUserConsumerController.DoChangeStatus(const UserStatus: TUserStatus): Context<Void>;
 begin
   Result := FChangeActiveStatusUseCase.Run(UserStatus);
 end;
@@ -61,14 +56,13 @@ begin
   Result := function(const E: Exception): Nullable<Void>
     begin
       FEventsPublisher.Trigger('Authentication', 'UserActivationFailed', JSONMarshaller.From(UserId)).Value;
-      FLogger.Error(E.Message, E);
-      Result := Nullable<Void>.Create(Void.Get);
+      raise AcquireExceptionObject;
     end;
 end;
 
 procedure TActivateUserConsumerController.Run(const UserId: TGuid);
 begin
-  &Try<Shared<TUserStatus>>.
+  &Try<TUserStatus>.
     New(TUserStatus.Create(UserId, True)).
     Map<Void>(DoChangeStatus).
     Match(OnException(UserId)).Value;

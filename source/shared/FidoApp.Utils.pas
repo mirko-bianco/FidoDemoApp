@@ -115,38 +115,42 @@ class function Utils.Apis.Server.Middlewares.ValidateToken(
   out ResponseText: string;
   out IsExpired: Boolean): Boolean;
 var
-  JWT: Shared<TJwt>;
+  RawJWT: TJwt;
+  JWT: IShared<TJwt>;
 begin
   IsExpired := False;
   Result := False;
 
-  JWT := JWTManager.VerifyToken(Token, VerificationKey);
-  if not Assigned(JWT.Value) then
+  RawJWT := JWTManager.VerifyToken(Token, VerificationKey);
+
+  if not Assigned(RawJWT) then
   begin
     ResponseCode := 400;
     Exit;
   end;
 
-  if not Assigned(JWT.Value.Claims.JSON.GetValue(Constants.CLAIM_TYPE)) then
+  JWT := Shared.Make(RawJWT);
+
+  if not Assigned(JWT.Claims.JSON.GetValue(Constants.CLAIM_TYPE)) then
   begin
     ResponseCode := 401;
     Exit;
   end;
 
-  if not JWT.Value.Claims.JSON.GetValue(Constants.CLAIM_TYPE).ToString.DeQuotedString('"').Equals(ClaimType) then
+  if not JWT.Claims.JSON.GetValue(Constants.CLAIM_TYPE).ToString.DeQuotedString('"').Equals(ClaimType) then
   begin
     ResponseCode := 401;
     Exit;
   end;
 
-  if not JWT.Value.Verified then
+  if not JWT.Verified then
   begin
     ResponseCode := 401;
     Exit;
   end;
 
-  if not JWT.Value.Claims.JSON.GetValue(Constants.CLAIM_TYPE).ToString.DeQuotedString('"').Equals(Constants.CLAIM_TYPE_REFRESH) and
-    (JWT.Value.Claims.Expiration < Now) then
+  if not JWT.Claims.JSON.GetValue(Constants.CLAIM_TYPE).ToString.DeQuotedString('"').Equals(Constants.CLAIM_TYPE_REFRESH) and
+    (JWT.Claims.Expiration < Now) then
   begin
     IsExpired := True;
     ResponseCode := 401;
@@ -340,11 +344,16 @@ class function Utils.Consumers.Middlewares.GetLogged(const Logger: ILogger): TEv
 begin
   Result := procedure(const ConsumerMethod: Action; const ClassName: string; const MethodName: string)
     begin
-      Logging.LogDuration(
-        Logger,
-        ClassName,
-        MethodName,
-        ConsumerMethod);
+      try
+        Logging.LogDuration(
+          Logger,
+          ClassName,
+          MethodName,
+          ConsumerMethod);
+      except
+        on E: Exception do
+          Logger.Error(E.Message, E);
+      end;
     end;
 end;
 

@@ -48,7 +48,7 @@ type
     procedure RunDoesNotRaiseAnyExceptionWhenUserIsUpdated;
 
     [Test]
-    procedure RunTriggersFailedEventWhenUserCannotBeUpdated;
+    procedure RunRaisesEChangeActiveStatusUseCaseFailureAndTriggersFailedEventWhenUserCannotBeUpdated;
   end;
 
 implementation
@@ -58,8 +58,6 @@ implementation
 procedure TAuthenticationServiceAdaptersControllersConsumersActivateUserTests.RunDoesNotRaiseAnyExceptionWhenUserIsUpdated;
 var
   Consumer: Shared<TActivateUserConsumerController>;
-
-  Logger: Mock<ILogger>;
 
   UseCase: IChangeActiveStatusUsecase;
   UserRepository: IUserRepository;
@@ -77,8 +75,6 @@ var
   UserId: TGuid;
 begin
   UserId := MockUtils.SomeGuid;
-
-  Logger := Mock<ILogger>.Create;
 
   UpdateStatusCommand := Mock<IUpdateActiveStatusCommand>.Create;
   UpdateStatusCommand.Setup.Returns<Integer>(1).When.Execute(UserId.ToString, 1);
@@ -103,7 +99,6 @@ begin
   Publisher := Mock<IEventsDrivenPublisher<string>>.Create;
 
   Consumer := TActivateUserConsumerController.Create(
-    Logger,
     UseCase,
     Publisher);
 
@@ -118,11 +113,9 @@ begin
   Publisher.Received(Times.Never).Trigger(Arg.IsAny<string>, Arg.IsAny<string>, Arg.IsAny<string>);
 end;
 
-procedure TAuthenticationServiceAdaptersControllersConsumersActivateUserTests.RunTriggersFailedEventWhenUserCannotBeUpdated;
+procedure TAuthenticationServiceAdaptersControllersConsumersActivateUserTests.RunRaisesEChangeActiveStatusUseCaseFailureAndTriggersFailedEventWhenUserCannotBeUpdated;
 var
   Consumer: Shared<TActivateUserConsumerController>;
-
-  Logger: Mock<ILogger>;
 
   UseCase: IChangeActiveStatusUsecase;
   UserRepository: IUserRepository;
@@ -140,8 +133,6 @@ var
   UserId: TGuid;
 begin
   UserId := MockUtils.SomeGuid;
-
-  Logger := Mock<ILogger>.Create;
 
   UpdateStatusCommand := Mock<IUpdateActiveStatusCommand>.Create;
   UpdateStatusCommand.Setup.Raises<EAuthenticationServiceAdaptersControllersConsumersActivateUserTests>.When.Execute(UserId.ToString, 1);
@@ -167,15 +158,15 @@ begin
   Publisher.Setup.Returns<Context<Boolean>>(True).When.Trigger(Arg.IsAny<string>, Arg.IsAny<string>, Arg.IsAny<string>);
 
   Consumer := TActivateUserConsumerController.Create(
-    Logger,
     UseCase,
     Publisher);
 
-  Assert.WillNotRaiseAny(
+  Assert.WillRaise(
     procedure
     begin
       Consumer.Value.Run(UserId);
-    end);
+    end,
+    EChangeActiveStatusUseCaseFailure);
 
   UpdateStatusCommand.Received(Times.Once).Execute(UserId.ToString, 1);
   UpdateStatusCommand.Received(Times.Never).Execute(Arg.IsNotIn<string>([UserId.ToString]), Arg.IsNotIn<Integer>([1]));

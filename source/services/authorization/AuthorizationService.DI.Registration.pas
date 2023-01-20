@@ -108,7 +108,7 @@ begin
   Container.Build;
   ConsulKVStore := Container.Resolve<IKVStore>;
 
-  Shared.Make(TStringList.Create);
+  FireDacDatabaseParams := Shared.Make(TStringList.Create);
   FireDacDatabaseParams.Values['DriverID'] := ConsulKVStore.Get('database.driverid', Constants.TIMEOUT);
   FireDacDatabaseParams.Values['User_Name'] := ConsulKVStore.Get('database.username', Constants.TIMEOUT);
   FireDacDatabaseParams.Values['Password'] := ConsulKVStore.Get('database.password', Constants.TIMEOUT);
@@ -151,7 +151,6 @@ begin
         Server := TIndyApiServer.Create(
           IniFile.ReadInteger('Server', 'Port', 8080),
           IniFile.ReadInteger('IndyServer', 'MaxConnections', 50),
-          TNullWebServer.Create,
           TSSLCertData.CreateEmpty)
       else
         Server := TBrookApiServer.Create(
@@ -160,7 +159,6 @@ begin
           IniFile.ReadBool('BrookServer', 'Threaded', True),
           IniFile.ReadInteger('BrookServer', 'ThreadPoolSize', 0),
           mtJson,
-          TNullWebServer.Create,
           TSSLCertData.CreateEmpty);
 
       Result := TConsulAwareApiServer.Create(

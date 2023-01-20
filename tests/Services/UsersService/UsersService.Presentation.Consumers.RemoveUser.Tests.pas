@@ -45,21 +45,20 @@ type
     procedure RunDoesNotRaiseAnyExceptionWhenUserCanBeDeleted;
 
     [Test]
-    procedure RunDoesNotRaiseAnyExceptionWhenUserCannotBeDeletedBecauseIsNotInTheDatabase;
+    procedure RunRaisesERemoveUseCaseFailureWhenUserCannotBeDeletedBecauseIsNotInTheDatabase;
 
     [Test]
-    procedure RunDoesNotRaiseAnyExceptionWhenUserCannotBeDeletedBecauseOfAnError;
+    procedure RunRaisesERemoveUseCaseFailureWhenUserCannotBeDeletedBecauseOfAnError;
   end;
 
 implementation
 
 { TAdaptersControllersConsumersRemoveUserTests }
 
-procedure TAdaptersControllersConsumersRemoveUserTests.RunDoesNotRaiseAnyExceptionWhenUserCannotBeDeletedBecauseIsNotInTheDatabase;
+procedure TAdaptersControllersConsumersRemoveUserTests.RunRaisesERemoveUseCaseFailureWhenUserCannotBeDeletedBecauseIsNotInTheDatabase;
 var
   Consumer: Shared<TRemoveUserConsumerController>;
 
-  Logger: Mock<ILogger>;
   UseCase: IRemoveUseCase;
   Repository: IUserRepository;
   InsertGateway: IInsertGateway;
@@ -74,8 +73,6 @@ var
   UserId: TGuid;
 begin
   UserId := MockUtils.SomeGuid;
-
-  Logger := Mock<ILogger>.Create;
 
   InsertUserCommand := Mock<IInsertUserCommand>.Create;
   DeleteUserCommand := Mock<IDeleteUserCommand>.Create;
@@ -97,15 +94,14 @@ begin
       Result := Repository;
     end);
 
-  Consumer := TRemoveUserConsumerController.Create(
-    Logger,
-    UseCase);
+  Consumer := TRemoveUserConsumerController.Create(UseCase);
 
-  Assert.WillNotRaiseAny(
+  Assert.WillRaise(
     procedure
     begin
       Consumer.Value.Run(UserId);
-    end);
+    end,
+    ERemoveUseCaseFailure);
 
   InsertUserCommand.Received(Times.Never).Execute(Arg.IsAny<string>, Arg.IsAny<string>, Arg.IsAny<string>);
   DeleteUserCommand.Received(Times.Once).Execute(UserId.ToString);
@@ -114,11 +110,10 @@ begin
   GetUsersCountQuery.Received(Times.Never).Open;
 end;
 
-procedure TAdaptersControllersConsumersRemoveUserTests.RunDoesNotRaiseAnyExceptionWhenUserCannotBeDeletedBecauseOfAnError;
+procedure TAdaptersControllersConsumersRemoveUserTests.RunRaisesERemoveUseCaseFailureWhenUserCannotBeDeletedBecauseOfAnError;
 var
   Consumer: Shared<TRemoveUserConsumerController>;
 
-  Logger: Mock<ILogger>;
   UseCase: IRemoveUseCase;
   Repository: IUserRepository;
   InsertGateway: IInsertGateway;
@@ -133,8 +128,6 @@ var
   UserId: TGuid;
 begin
   UserId := MockUtils.SomeGuid;
-
-  Logger := Mock<ILogger>.Create;
 
   InsertUserCommand := Mock<IInsertUserCommand>.Create;
   DeleteUserCommand := Mock<IDeleteUserCommand>.Create;
@@ -156,15 +149,14 @@ begin
       Result := Repository;
     end);
 
-  Consumer := TRemoveUserConsumerController.Create(
-    Logger,
-    UseCase);
+  Consumer := TRemoveUserConsumerController.Create(UseCase);
 
-  Assert.WillNotRaiseAny(
+  Assert.WillRaise(
     procedure
     begin
       Consumer.Value.Run(UserId);
-    end);
+    end,
+    ERemoveUseCaseFailure);
 
   InsertUserCommand.Received(Times.Never).Execute(Arg.IsAny<string>, Arg.IsAny<string>, Arg.IsAny<string>);
   DeleteUserCommand.Received(Times.Once).Execute(UserId.ToString);
@@ -177,7 +169,6 @@ procedure TAdaptersControllersConsumersRemoveUserTests.RunDoesNotRaiseAnyExcepti
 var
   Consumer: Shared<TRemoveUserConsumerController>;
 
-  Logger: Mock<ILogger>;
   UseCase: IRemoveUseCase;
   Repository: IUserRepository;
   InsertGateway: IInsertGateway;
@@ -192,8 +183,6 @@ var
   UserId: TGuid;
 begin
   UserId := MockUtils.SomeGuid;
-
-  Logger := Mock<ILogger>.Create;
 
   InsertUserCommand := Mock<IInsertUserCommand>.Create;
   DeleteUserCommand := Mock<IDeleteUserCommand>.Create;
@@ -214,9 +203,7 @@ begin
       Result := Repository;
     end);
 
-  Consumer := TRemoveUserConsumerController.Create(
-    Logger,
-    UseCase);
+  Consumer := TRemoveUserConsumerController.Create(UseCase);
 
   Assert.WillNotRaiseAny(
     procedure
@@ -229,7 +216,6 @@ begin
   DeleteUserCommand.Received(Times.Never).Execute(Arg.IsNotIn<string>([UserId.ToString]));
   GetAllUsersQuery.Received(Times.Never).Open(Arg.IsAny<string>, Arg.IsAny<Integer>, Arg.IsAny<Integer>);
   GetUsersCountQuery.Received(Times.Never).Open;
-  Logger.Received(Times.Never).Log(Arg.IsAny<string>, Arg.IsAny<Exception>);
 end;
 
 initialization

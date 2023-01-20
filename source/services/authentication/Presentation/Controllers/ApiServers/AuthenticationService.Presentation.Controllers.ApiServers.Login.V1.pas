@@ -36,7 +36,7 @@ type
   TLoginV1ApiServerController = class(TObject)
   private
     FUseCase: ILoginUseCase;
-    function DoLogin(const User: Shared<TUser>): Context<TTokens>;
+    function DoLogin(const User: TUser): Context<TTokens>;
   public
     constructor Create(const UseCase: ILoginUseCase);
 
@@ -57,7 +57,7 @@ begin
   FUseCase := Utilities.CheckNotNullAndSet(UseCase, 'UseCase');
 end;
 
-function TLoginV1ApiServerController.DoLogin(const User: Shared<TUser>): Context<TTokens>;
+function TLoginV1ApiServerController.DoLogin(const User: TUser): Context<TTokens>;
 begin
   Result := FUseCase.Run(User);
 end;
@@ -69,7 +69,7 @@ procedure TLoginV1ApiServerController.Execute(
 var
   Tokens: TTokens;
 begin
-  Tokens := &Try<Shared<TUser>>.
+  Tokens := &Try<TUser>.
     New(TUser.Create(LoginParams.Username, LoginParams.Password)).
     Map<TTokens>(DoLogin).
     Match(function(const E: Exception): Nullable<TTokens>

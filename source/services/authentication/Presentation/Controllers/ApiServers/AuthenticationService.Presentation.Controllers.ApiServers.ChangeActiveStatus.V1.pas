@@ -31,7 +31,7 @@ type
   private
     FUseCase: IChangeActiveStatusUseCase;
 
-    function DoChangeStatus(const UserStatus: Shared<TUserStatus>): Context<Void>;
+    function DoChangeStatus(const UserStatus: TUserStatus): Context<Void>;
   public
     constructor Create(const UseCase: IChangeActiveStatusUseCase);
 
@@ -48,14 +48,14 @@ implementation
 
 { TChangeActiveStatusV1ApiServerController }
 
-function TChangeActiveStatusV1ApiServerController.DoChangeStatus(const UserStatus: Shared<TUserStatus>): Context<Void>;
+function TChangeActiveStatusV1ApiServerController.DoChangeStatus(const UserStatus: TUserStatus): Context<Void>;
 begin
   Result := FUseCase.Run(UserStatus);
 end;
 
 procedure TChangeActiveStatusV1ApiServerController.Execute(const UserId: TGuid; const NewStatus: Boolean);
 begin
-  &Try<Shared<TUserStatus>>.
+  &Try<TUserStatus>.
     New(TUserStatus.Create(UserId, NewStatus)).
     Map<Void>(DoChangeStatus).
     Match(nil).Value;

@@ -45,14 +45,14 @@ type
     procedure RunDoesNotRaiseAnyExceptionWhenSignupCanBeCanceled;
 
     [Test]
-    procedure RunDoesNotRaiseAnyExceptionWhenSignupCannotBeCanceled;
+    procedure RunRaisesEUserRepositoryWhenSignupCannotBeCanceled;
   end;
 
 implementation
 
 { TAuthenticationServiceAdaptersControllersConsumersCancelSignupTests }
 
-procedure TAuthenticationServiceAdaptersControllersConsumersCancelSignupTests.RunDoesNotRaiseAnyExceptionWhenSignupCannotBeCanceled;
+procedure TAuthenticationServiceAdaptersControllersConsumersCancelSignupTests.RunRaisesEUserRepositoryWhenSignupCannotBeCanceled;
 var
   Consumer: Shared<TCancelSignupConsumerController>;
   UseCase: IRemoveUsecase;
@@ -66,13 +66,9 @@ var
   DeleteUserCommand: Mock<IDeleteUserCommand>;
   InsertUserCommand: Mock<IInsertUserCommand>;
 
-  Logger: Mock<ILogger>;
-
   UserId: TGuid;
 begin
   UserId := MockUtils.SomeGuid;
-
-  Logger := Mock<ILogger>.Create;
 
   UpdateStatusCommand := Mock<IUpdateActiveStatusCommand>.Create;
   GetUserQuery := Mock<IGetUserByUsernameAndHashedPasswordQuery>.Create;
@@ -93,15 +89,14 @@ begin
       Result := UserRepository;
     end);
 
-  Consumer := TCancelSignupConsumerController.Create(
-    Logger,
-    UseCase);
+  Consumer := TCancelSignupConsumerController.Create(UseCase);
 
-  Assert.WillNotRaiseAny(
+  Assert.WillRaise(
     procedure
     begin
       Consumer.Value.Run(UserId);
-    end);
+    end,
+    EUserRepository);
 
   DeleteUserCommand.Received(Times.Once).Execute(UserId.ToString);
   DeleteUserCommand.Received(Times.Never).Execute(Arg.IsNotIn<string>([UserId.ToString]));
@@ -121,13 +116,9 @@ var
   DeleteUserCommand: Mock<IDeleteUserCommand>;
   InsertUserCommand: Mock<IInsertUserCommand>;
 
-  Logger: Mock<ILogger>;
-
   UserId: TGuid;
 begin
   UserId := MockUtils.SomeGuid;
-
-  Logger := Mock<ILogger>.Create;
 
   UpdateStatusCommand := Mock<IUpdateActiveStatusCommand>.Create;
   GetUserQuery := Mock<IGetUserByUsernameAndHashedPasswordQuery>.Create;
@@ -148,9 +139,7 @@ begin
       Result := UserRepository;
     end);
 
-  Consumer := TCancelSignupConsumerController.Create(
-    Logger,
-    UseCase);
+  Consumer := TCancelSignupConsumerController.Create(UseCase);
 
   Assert.WillNotRaiseAny(
     procedure

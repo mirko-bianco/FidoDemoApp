@@ -68,8 +68,8 @@ type
     FEventsPublisher: IEventsDrivenPublisher<string>;
 
     function ValidateRegisterParams(const RegisterParams: ISignupParams): ISignupParams;
-    function MapToUser(const RegisterParams: ISignupParams): Shared<TUser>;
-    function Signup(const User: Shared<TUser>): Context<TGuid>;
+    function MapToUser(const RegisterParams: ISignupParams): TUser;
+    function Signup(const User: TUser): Context<TGuid>;
     function TryToPublish(const Params: TSignupAndIdParams): TPublishedParams;
     function DeleteAndRaise(const Params: TPublishedParams): TGuid;
     function ReturnId(const Params: TPublishedParams): TGuid;
@@ -109,12 +109,12 @@ begin
     raise ESignupUseCaseValidation.Create('Firstname and Lastname cannot be empty.');
 end;
 
-function TSignupV1ApiServerController.MapToUser(const RegisterParams: ISignupParams): Shared<TUser>;
+function TSignupV1ApiServerController.MapToUser(const RegisterParams: ISignupParams): TUser;
 begin
   Result := TUser.Create(RegisterParams.Username, RegisterParams.Password);
 end;
 
-function TSignupV1ApiServerController.Signup(const User: Shared<TUser>): Context<TGuid>;
+function TSignupV1ApiServerController.Signup(const User: TUser): Context<TGuid>;
 begin
   Result := FSignupUseCase.Run(User);
 end;
@@ -151,7 +151,7 @@ begin
     Context<ISignupParams>.
       New(RegisterParams).
       Map<ISignupParams>(ValidateRegisterParams).
-      Map<Shared<TUser>>(MapToUser).
+      Map<TUser>(MapToUser).
       Map<TGuid>(Signup).Value
     );
 end;

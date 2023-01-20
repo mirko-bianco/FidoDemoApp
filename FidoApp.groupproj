@@ -12,6 +12,12 @@
         <Projects Include="..\FidoLib\source\FidoRedis.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="..\FidoLib\source\FidoGui.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="..\FidoLib\source\FidoFMX.dproj">
+            <Dependencies/>
+        </Projects>
         <Projects Include="..\FidoLib\tests\FidoLibTests.dproj">
             <Dependencies/>
         </Projects>
@@ -70,6 +76,24 @@
     </Target>
     <Target Name="FidoRedis:Make">
         <MSBuild Projects="..\FidoLib\source\FidoRedis.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="FidoGui">
+        <MSBuild Projects="..\FidoLib\source\FidoGui.dproj"/>
+    </Target>
+    <Target Name="FidoGui:Clean">
+        <MSBuild Projects="..\FidoLib\source\FidoGui.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="FidoGui:Make">
+        <MSBuild Projects="..\FidoLib\source\FidoGui.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="FidoFMX">
+        <MSBuild Projects="..\FidoLib\source\FidoFMX.dproj"/>
+    </Target>
+    <Target Name="FidoFMX:Clean">
+        <MSBuild Projects="..\FidoLib\source\FidoFMX.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="FidoFMX:Make">
+        <MSBuild Projects="..\FidoLib\source\FidoFMX.dproj" Targets="Make"/>
     </Target>
     <Target Name="FidoLibTests">
         <MSBuild Projects="..\FidoLib\tests\FidoLibTests.dproj"/>
@@ -144,13 +168,13 @@
         <MSBuild Projects="tests\Tests.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="FidoCore;FidoBrook;FidoRedis;FidoLibTests;FidoAppShared;KVSetter;AuthenticationService;AuthorizationService;UsersService;ClientApp;Tests"/>
+        <CallTarget Targets="FidoCore;FidoBrook;FidoRedis;FidoGui;FidoFMX;FidoLibTests;FidoAppShared;KVSetter;AuthenticationService;AuthorizationService;UsersService;ClientApp;Tests"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="FidoCore:Clean;FidoBrook:Clean;FidoRedis:Clean;FidoLibTests:Clean;FidoAppShared:Clean;KVSetter:Clean;AuthenticationService:Clean;AuthorizationService:Clean;UsersService:Clean;ClientApp:Clean;Tests:Clean"/>
+        <CallTarget Targets="FidoCore:Clean;FidoBrook:Clean;FidoRedis:Clean;FidoGui:Clean;FidoFMX:Clean;FidoLibTests:Clean;FidoAppShared:Clean;KVSetter:Clean;AuthenticationService:Clean;AuthorizationService:Clean;UsersService:Clean;ClientApp:Clean;Tests:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="FidoCore:Make;FidoBrook:Make;FidoRedis:Make;FidoLibTests:Make;FidoAppShared:Make;KVSetter:Make;AuthenticationService:Make;AuthorizationService:Make;UsersService:Make;ClientApp:Make;Tests:Make"/>
+        <CallTarget Targets="FidoCore:Make;FidoBrook:Make;FidoRedis:Make;FidoGui:Make;FidoFMX:Make;FidoLibTests:Make;FidoAppShared:Make;KVSetter:Make;AuthenticationService:Make;AuthorizationService:Make;UsersService:Make;ClientApp:Make;Tests:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

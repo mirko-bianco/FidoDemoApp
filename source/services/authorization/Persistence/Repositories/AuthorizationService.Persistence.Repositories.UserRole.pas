@@ -51,7 +51,7 @@ end;
 
 function TUserRoleRepository.ExtractRole(const Data: TUserRole): string;
 var
-  Role: Shared<TUserRole>;
+  Role: TUserRole;
 begin
   Role := Data;
 

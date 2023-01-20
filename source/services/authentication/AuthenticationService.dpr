@@ -116,40 +116,40 @@ begin
 end;
 
 var
-  Cursor: Shared<TFDGUIxWaitCursor>;
+  Cursor: IShared<TFDGUIxWaitCursor>;
   Server: IApiServer;
-  Container: Shared<TContainer>;
+  Container: IShared<TContainer>;
   EventsDrivenSubscriber: IEventsDrivenSubscriber;
 begin
 {$IFDEF DEBUG}
   ReportMemoryLeaksOnShutdown := True;
 {$ENDIF}
-  Container := TContainer.Create;
+  Container := Shared.Make(TContainer.Create);
   AuthenticationService.DI.Registration.DIRegistration(Container);
 
-  Cursor := InitializeFireDacCursor;
+  Cursor := Shared.Make(InitializeFireDacCursor);
 
   Utils.DbMigrations.Run(
-    Container.Value.Resolve<IDatabaseMigrationsModel>,
+    Container.Resolve<IDatabaseMigrationsModel>,
     DATABASENAME);
 
-  EventsDrivenSubscriber := Container.Value.Resolve<IEventsDrivenSubscriber>;
+  EventsDrivenSubscriber := Container.Resolve<IEventsDrivenSubscriber>;
 
-  Server := Container.Value.Resolve<IApiServer>;
+  Server := Container.Resolve<IApiServer>;
   try
     try
       Utils.Apis.Server.Middlewares.Register(
         Server,
-        Container.Value.Resolve<ILogger>,
-        Container.Value.Resolve<IJWTManager>,
-        Container.Value.Resolve<IKVStore>.Get('public.key', Constants.TIMEOUT),
+        Container.Resolve<ILogger>,
+        Container.Resolve<IJWTManager>,
+        Container.Resolve<IKVStore>.Get('public.key', Constants.TIMEOUT),
         function(const CurrentRefreshToken: string; out AccessToken: string; out RefreshToken: string): Boolean
         var
           RefreshTokenUseCase: IRefreshTokenUseCase;
           Tokens: TTokens;
         begin
           Result := False;
-          RefreshTokenUseCase := Container.Value.Resolve<IRefreshTokenUseCase>;
+          RefreshTokenUseCase := Container.Resolve<IRefreshTokenUseCase>;
           try
             Tokens := Context<TRefreshTokensData>.
               New(TRefreshTokensData.Create(RefreshTokenUseCase, CurrentRefreshToken)).
@@ -159,7 +159,7 @@ begin
             Result := True;
           except
             on E: Exception do
-              Container.Value.Resolve<ILogger>.Error(E.Message, E);
+              Container.Resolve<ILogger>.Error(E.Message, E);
           end;
         end,
         function(const Authorization: string; const RefreshToken: string): IUserRoleAndPermissions
@@ -167,16 +167,16 @@ begin
           Result := Utils.Apis.Server.Jwt.ExtractUserRoleAndPermissions(Authorization);
         end);
 
-      Server.RegisterResource(Container.Value.Resolve<THealthApiServerController>);
-      Server.RegisterResource(Container.Value.Resolve<TLoginV1ApiServerController>);
-      Server.RegisterResource(Container.Value.Resolve<TReFreshTokenV1ApiServerController>);
-      Server.RegisterResource(Container.Value.Resolve<TSignupV1ApiServerController>);
-      Server.RegisterResource(Container.Value.Resolve<TChangeActiveStatusV1ApiServerController>);
+      Server.RegisterResource(Container.Resolve<THealthApiServerController>);
+      Server.RegisterResource(Container.Resolve<TLoginV1ApiServerController>);
+      Server.RegisterResource(Container.Resolve<TReFreshTokenV1ApiServerController>);
+      Server.RegisterResource(Container.Resolve<TSignupV1ApiServerController>);
+      Server.RegisterResource(Container.Resolve<TChangeActiveStatusV1ApiServerController>);
       Server.SetActive(True);
 
-      EventsDrivenSubscriber.RegisterGlobalMiddleware(Utils.Consumers.Middlewares.GetLogged(Container.Value.Resolve<ILogger>));
-      EventsDrivenSubscriber.RegisterConsumer(Container.Value.Resolve<TCancelSignupConsumerController>);
-      EventsDrivenSubscriber.RegisterConsumer(Container.Value.Resolve<TActivateUserConsumerController>);
+      EventsDrivenSubscriber.RegisterGlobalMiddleware(Utils.Consumers.Middlewares.GetLogged(Container.Resolve<ILogger>));
+      EventsDrivenSubscriber.RegisterConsumer(Container.Resolve<TCancelSignupConsumerController>);
+      EventsDrivenSubscriber.RegisterConsumer(Container.Resolve<TActivateUserConsumerController>);
 
       {$IFDEF LINUX}
       while true do Sleep(1000);

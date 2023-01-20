@@ -6,13 +6,11 @@ uses
   System.SysUtils,
 
   Spring,
-  Spring.Logging,
 
   Fido.Utilities,
   Fido.Functional,
   Fido.Functional.Tries,
   Fido.Mappers,
-  Fido.Logging.Utils,
   Fido.JSON.Marshalling,
   Fido.EventsDriven.Attributes,
   Fido.EventsDriven.Publisher.Intf,
@@ -29,7 +27,6 @@ type
 
   TAddUserConsumerController = class
   private
-    FLogger: ILogger;
     FAddUseCase: IAddUseCase;
     FEventsPublisher: IEventsDrivenPublisher<string>;
 
@@ -39,7 +36,7 @@ type
     function DoAdd(const User: TUser): Context<Void>;
     function OnException(const User: TUser): OnFailureEvent<Void>;
   public
-    constructor Create(const Logger: ILogger; const AddUseCase: IAddUseCase; const EventsPublisher: IEventsDrivenPublisher<string>);
+    constructor Create(const AddUseCase: IAddUseCase; const EventsPublisher: IEventsDrivenPublisher<string>);
 
     [TriggeredByEvent('Authentication', 'UserAdded')]
     procedure Run(const UserCreatedDto: IUserCreatedDto);
@@ -50,13 +47,11 @@ implementation
 { TAddUserConsumerController }
 
 constructor TAddUserConsumerController.Create(
-  const Logger: ILogger;
   const AddUseCase: IAddUseCase;
   const EventsPublisher: IEventsDrivenPublisher<string>);
 begin
   inherited Create;
 
-  FLogger := Utilities.CheckNotNullAndSet(Logger, 'Logger');
   FAddUseCase := Utilities.CheckNotNullAndSet(AddUseCase, 'AddUseCase');
   FEventsPublisher := Utilities.CheckNotNullAndSet(EventsPublisher, 'DistribuitedEventPublisher');
 end;
@@ -84,8 +79,7 @@ begin
   Result := function(const E: Exception): Nullable<Void>
     begin
       FEventsPublisher.Trigger('Users', 'UserAddFailed', JSONMarshaller.From(User.Id).DeQuotedString('"')).Value;
-      FLogger.Error(E.Message, E);
-      Result := Nullable<Void>.Create(Void.Get);
+      raise AcquireExceptionObject;
     end;
 end;
 

@@ -30,8 +30,8 @@ type
   private
     FSetRoleByUserIdUseCase: ISetRoleByUserIdUseCase;
 
-    function SetRole(const UserRole: Shared<TUserRole>): Context<Void>;
-    function DoSetRole(const UserRole: Shared<TUserRole>): Context<Void>;
+    function SetRole(const UserRole: TUserRole): Context<Void>;
+    function DoSetRole(const UserRole: TUserRole): Context<Void>;
   public
     constructor Create(const SetRoleByUserIdUseCase: ISetRoleByUserIdUseCase);
 
@@ -55,14 +55,14 @@ begin
   FSetRoleByUserIdUseCase := Utilities.CheckNotNullAndSet(SetRoleByUserIdUseCase, 'SetRoleByUserIdUseCase');
 end;
 
-function TSetRoleByUserIdV1ApiServerController.DoSetRole(const UserRole: Shared<TUserRole>): Context<Void>;
+function TSetRoleByUserIdV1ApiServerController.DoSetRole(const UserRole: TUserRole): Context<Void>;
 begin
   Result := FSetRoleByUserIdUseCase.Run(UserRole);
 end;
 
-function TSetRoleByUserIdV1ApiServerController.SetRole(const UserRole: Shared<TUserRole>): Context<Void>;
+function TSetRoleByUserIdV1ApiServerController.SetRole(const UserRole: TUserRole): Context<Void>;
 begin
-  Result := &Try<Shared<TUserRole>>.
+  Result := &Try<TUserRole>.
     New(UserRole).
     Map<Void>(DoSetRole).
     Match(nil);
@@ -72,7 +72,7 @@ procedure TSetRoleByUserIdV1ApiServerController.Execute(
   const UserId: TGuid;
   const Role: string);
 begin
-  Context<Shared<TUserRole>>.New(TUserRole.Create(UserId, Role)).Map<Void>(SetRole).Value;
+  Context<TUserRole>.New(TUserRole.Create(UserId, Role)).Map<Void>(SetRole).Value;
 end;
 
 end.

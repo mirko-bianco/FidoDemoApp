@@ -176,7 +176,6 @@ begin
         Server := TIndyApiServer.Create(
           IniFile.ReadInteger('Server', 'Port', 8080),
           IniFile.ReadInteger('IndyServer', 'MaxConnections', 50),
-          TNullWebServer.Create,
           TSSLCertData.CreateEmpty)
       else
         Server := TBrookApiServer.Create(
@@ -185,7 +184,6 @@ begin
           IniFile.ReadBool('BrookServer', 'Threaded', True),
           IniFile.ReadInteger('BrookServer', 'ThreadPoolSize', 0),
           mtJson,
-          TNullWebServer.Create,
           TSSLCertData.CreateEmpty);
 
       Result := TConsulAwareApiServer.Create(

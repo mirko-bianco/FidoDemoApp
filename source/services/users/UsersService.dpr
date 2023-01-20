@@ -63,34 +63,34 @@ uses
   UsersService.Persistence.Gateways.Remove in 'Persistence\Gateways\UsersService.Persistence.Gateways.Remove.pas';
 
 var
-  Cursor: Shared<TFDGUIxWaitCursor>;
+  Cursor: IShared<TFDGUIxWaitCursor>;
   Server: IApiServer;
-  Container: Shared<TContainer>;
+  Container: IShared<TContainer>;
   EventsDrivenSubscriber: IEventsDrivenSubscriber;
   ConsulKVStore: IKVStore;
 begin
 {$IFDEF DEBUG}
   ReportMemoryLeaksOnShutdown := True;
 {$ENDIF}
-  Container := TContainer.Create;
+  Container := Shared.Make(TContainer.Create);
   UsersService.DI.Registration.DIRegistration(Container);
 
-  Cursor := InitializeFireDacCursor;
+  Cursor := Shared.Make(InitializeFireDacCursor);
 
   Utils.DbMigrations.Run(
-    Container.Value.Resolve<IDatabaseMigrationsModel>,
+    Container.Resolve<IDatabaseMigrationsModel>,
     DATABASENAME);
 
-  ConsulKVStore := Container.Value.Resolve<IKVStore>;
+  ConsulKVStore := Container.Resolve<IKVStore>;
 
-  EventsDrivenSubscriber := Container.Value.Resolve<IEventsDrivenSubscriber>;
-  Server := Container.Value.Resolve<IApiServer>;
+  EventsDrivenSubscriber := Container.Resolve<IEventsDrivenSubscriber>;
+  Server := Container.Resolve<IApiServer>;
   try
     try
       Utils.Apis.Server.Middlewares.Register(
         Server,
-        Container.Value.Resolve<ILogger>,
-        Container.Value.Resolve<IJWTManager>,
+        Container.Resolve<ILogger>,
+        Container.Resolve<IJWTManager>,
         ConsulKVStore.Get('public.key', Constants.TIMEOUT),
         function(const CurrentRefreshToken: string; out AccessToken: string; out RefreshToken: string): Boolean
         var
@@ -100,16 +100,16 @@ begin
         begin
           Result := True;
           try
-            RefreshTokenUseCase := Container.Value.Resolve<IRefreshTokenUseCase>;
+            RefreshTokenUseCase := Container.Resolve<IRefreshTokenUseCase>;
             RefreshTokenUseCase.Run.Value;
-            Api := Container.Value.Resolve<IAuthorizationV1ApiClient>;
+            Api := Container.Resolve<IAuthorizationV1ApiClient>;
             Configuration := Api.GetConfiguration as IAuthorizationV1ApiClientConfiguration;
             AccessToken := Configuration.GetAuthorization;
             RefreshToken := Configuration.GetRefreshToken;
           except
             on E: Exception do
             begin
-              Container.Value.Resolve<ILogger>.Error(E.Message, E);
+              Container.Resolve<ILogger>.Error(E.Message, E);
               Result := False;
             end;
           end;
@@ -119,14 +119,14 @@ begin
           Result := Utils.Apis.Server.Jwt.ExtractUserRoleAndPermissions(Authorization);
         end);
 
-      Server.RegisterResource(Container.Value.Resolve<THealthApiServerController>);
-      Server.RegisterResource(Container.Value.Resolve<TGetAllV1ApiServerController>);
+      Server.RegisterResource(Container.Resolve<THealthApiServerController>);
+      Server.RegisterResource(Container.Resolve<TGetAllV1ApiServerController>);
 
       Server.SetActive(True);
 
-      EventsDrivenSubscriber.RegisterGlobalMiddleware(Utils.Consumers.Middlewares.GetLogged(Container.Value.Resolve<ILogger>));
-      EventsDrivenSubscriber.RegisterConsumer(Container.Value.Resolve<TAddUserConsumerController>);
-      EventsDrivenSubscriber.RegisterConsumer(Container.Value.Resolve<TRemoveUserConsumerController>);
+      EventsDrivenSubscriber.RegisterGlobalMiddleware(Utils.Consumers.Middlewares.GetLogged(Container.Resolve<ILogger>));
+      EventsDrivenSubscriber.RegisterConsumer(Container.Resolve<TAddUserConsumerController>);
+      EventsDrivenSubscriber.RegisterConsumer(Container.Resolve<TRemoveUserConsumerController>);
 
       {$IFDEF LINUX}
       while true do Sleep(1000);

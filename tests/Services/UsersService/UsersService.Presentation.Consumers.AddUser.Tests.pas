@@ -51,17 +51,17 @@ type
     [Test]
     [TestCase('Zero Records', '0')]
     [TestCase('Two Records', '2')]
-    procedure RunPublishesAnErrorEventWhenXRecordsAreAffected(const AffectedRecords: Integer);
+    procedure RunRaisesEAddUseCaseFailureAndPublishesAnErrorEventWhenXRecordsAreAffected(const AffectedRecords: Integer);
 
     [Test]
-    procedure RunPublishesAnErrorEventWhenGatewayReturnsAnError;
+    procedure RunRaisesEAddUseCaseFailurePublishesAnErrorEventWhenGatewayReturnsAnError;
 
     [Test]
     [TestCase('Invalid Id', 'werwer,First name, last name')]
     [TestCase('Empty Id', ',First name, last name')]
     [TestCase('Empty First Name', 'E970C2A4-135A-46B4-97F7-3FA2C88339EE,,last name')]
     [TestCase('Empty Last Name', 'E970C2A4-135A-46B4-97F7-3FA2C88339EE,first name,')]
-    procedure RunPublishesAnErrorEventWhenDataIsInvalid(const UserId: string; const FirstName: string; const LastName: string);
+    procedure RunRaisesEAddUseCaseValidationAndPublishesAnErrorEventWhenDataIsInvalid(const UserId: string; const FirstName: string; const LastName: string);
   end;
 
 implementation
@@ -82,8 +82,6 @@ var
   GetAllUsersQuery: Mock<IGetAllUsersQuery>;
   GetUsersCountQuery: Mock<IGetUsersCountQuery>;
 
-  Logger: Mock<ILogger>;
-
   Publisher: Mock<IEventsDrivenPublisher<string>>;
 
   UserId: TGuid;
@@ -93,8 +91,6 @@ begin
   UserId := MockUtils.SomeGuid;
   FirstName := MockUtils.SomeString;
   LastName := MockUtils.SomeString;
-
-  Logger := Mock<ILogger>.Create;
 
   InsertUserCommand := Mock<IInsertUserCommand>.Create;
   InsertUserCommand.Setup.Returns<Integer>(1).When.Execute(UserId.ToString, FirstName, LastName);
@@ -120,7 +116,6 @@ begin
   Publisher.Setup.Returns<Context<Boolean>>(True).When.Trigger(Arg.IsAny<string>, Arg.IsAny<string>, Arg.IsAny<string>);
 
   Consumer := TAddUserConsumerController.Create(
-    Logger,
     UseCase,
     Publisher);
 
@@ -141,7 +136,7 @@ begin
   Publisher.Received(Times.Never).Trigger(Arg.IsNotIn<string>(['Users']), Arg.IsNotIn<string>(['UserAdded']), Arg.IsNotIn<string>([JSONMarshaller.From(UserId).DeQuotedString('"')]));
 end;
 
-procedure TUsersServiceAdaptersControllersConsumersAddUserTests.RunPublishesAnErrorEventWhenDataIsInvalid(const UserId, FirstName, LastName: string);
+procedure TUsersServiceAdaptersControllersConsumersAddUserTests.RunRaisesEAddUseCaseValidationAndPublishesAnErrorEventWhenDataIsInvalid(const UserId, FirstName, LastName: string);
 var
   Consumer: Shared<TAddUserConsumerController>;
   UseCase: IAddUseCase;
@@ -155,13 +150,9 @@ var
   GetAllUsersQuery: Mock<IGetAllUsersQuery>;
   GetUsersCountQuery: Mock<IGetUsersCountQuery>;
 
-  Logger: Mock<ILogger>;
-
   Publisher: Mock<IEventsDrivenPublisher<string>>;
   Id: TGuid;
 begin
-  Logger := Mock<ILogger>.Create;
-
   InsertUserCommand := Mock<IInsertUserCommand>.Create;
   DeleteUserCommand := Mock<IDeleteUserCommand>.Create;
   GetAllUsersQuery := Mock<IGetAllUsersQuery>.Create;
@@ -184,16 +175,16 @@ begin
   Publisher.Setup.Returns<Context<Boolean>>(True).When.Trigger(Arg.IsAny<string>, Arg.IsAny<string>, Arg.IsAny<string>);
 
   Consumer := TAddUserConsumerController.Create(
-    Logger,
     UseCase,
     Publisher);
 
-  Assert.WillNotRaiseAny(
+  Assert.WillRaise(
     procedure
     begin
       Consumer.Value.Run(
         JSONUnmarshaller.To<IUserCreatedDto>(Format('{"userid": "%s", "firstname": "%s", "lastname": "%s"}', [UserId , FirstName, LastName])));
-    end);
+    end,
+    EAddUseCaseValidation);
 
   InsertUserCommand.Received(Times.Never).Execute(Arg.IsAny<string>, Arg.IsAny<string>, Arg.IsAny<string>);
   DeleteUserCommand.Received(Times.Never).Execute(Arg.IsAny<string>);
@@ -207,7 +198,7 @@ begin
   Publisher.Received(Times.Never).Trigger(Arg.IsNotIn<string>(['Users']), Arg.IsNotIn<string>(['UserAddFailed']), Arg.IsNotIn<string>([UserId]));
 end;
 
-procedure TUsersServiceAdaptersControllersConsumersAddUserTests.RunPublishesAnErrorEventWhenGatewayReturnsAnError;
+procedure TUsersServiceAdaptersControllersConsumersAddUserTests.RunRaisesEAddUseCaseFailurePublishesAnErrorEventWhenGatewayReturnsAnError;
 var
   Consumer: Shared<TAddUserConsumerController>;
   UseCase: IAddUseCase;
@@ -221,8 +212,6 @@ var
   GetAllUsersQuery: Mock<IGetAllUsersQuery>;
   GetUsersCountQuery: Mock<IGetUsersCountQuery>;
 
-  Logger: Mock<ILogger>;
-
   Publisher: Mock<IEventsDrivenPublisher<string>>;
 
   UserId: TGuid;
@@ -232,8 +221,6 @@ begin
   UserId := MockUtils.SomeGuid;
   FirstName := MockUtils.SomeString;
   LastName := MockUtils.SomeString;
-
-  Logger := Mock<ILogger>.Create;
 
   InsertUserCommand := Mock<IInsertUserCommand>.Create;
   InsertUserCommand.Setup.Raises<EUsersServiceAdaptersControllersConsumersAddUserTests>.When.Execute(UserId.ToString, FirstName, LastName);
@@ -259,16 +246,16 @@ begin
   Publisher.Setup.Returns<Context<Boolean>>(True).When.Trigger(Arg.IsAny<string>, Arg.IsAny<string>, Arg.IsAny<string>);
 
   Consumer := TAddUserConsumerController.Create(
-    Logger,
     UseCase,
     Publisher);
 
-  Assert.WillNotRaiseAny(
+  Assert.WillRaise(
     procedure
     begin
       Consumer.Value.Run(
         JSONUnmarshaller.To<IUserCreatedDto>(Format('{"userid": %s, "firstname": "%s", "lastname": "%s"}', [JSONMarshaller.From<TGuid>(UserId) , FirstName, LastName])));
-    end);
+    end,
+    EAddUseCaseFailure);
 
   InsertUserCommand.Received(Times.Once).Execute(UserId.ToString , FirstName, LastName);
   InsertUserCommand.Received(Times.Never).Execute(Arg.IsNotIn<string>([UserId.ToString]), Arg.IsNotIn<string>([FirstName]), Arg.IsNotIn<string>([LastName]));
@@ -280,7 +267,7 @@ begin
   Publisher.Received(Times.Never).Trigger(Arg.IsNotIn<string>(['Users']), Arg.IsNotIn<string>(['UserAddFailed']), Arg.IsNotIn<string>([JSONMarshaller.From(UserId).DeQuotedString('"')]));
 end;
 
-procedure TUsersServiceAdaptersControllersConsumersAddUserTests.RunPublishesAnErrorEventWhenXRecordsAreAffected(const AffectedRecords: Integer);
+procedure TUsersServiceAdaptersControllersConsumersAddUserTests.RunRaisesEAddUseCaseFailureAndPublishesAnErrorEventWhenXRecordsAreAffected(const AffectedRecords: Integer);
 var
   Consumer: Shared<TAddUserConsumerController>;
   UseCase: IAddUseCase;
@@ -294,8 +281,6 @@ var
   GetAllUsersQuery: Mock<IGetAllUsersQuery>;
   GetUsersCountQuery: Mock<IGetUsersCountQuery>;
 
-  Logger: Mock<ILogger>;
-
   Publisher: Mock<IEventsDrivenPublisher<string>>;
 
   UserId: TGuid;
@@ -305,8 +290,6 @@ begin
   UserId := MockUtils.SomeGuid;
   FirstName := MockUtils.SomeString;
   LastName := MockUtils.SomeString;
-
-  Logger := Mock<ILogger>.Create;
 
   InsertUserCommand := Mock<IInsertUserCommand>.Create;
   InsertUserCommand.Setup.Returns<Integer>(AffectedRecords).When.Execute(UserId.ToString, FirstName, LastName);
@@ -332,16 +315,16 @@ begin
   Publisher.Setup.Returns<Context<Boolean>>(True).When.Trigger(Arg.IsAny<string>, Arg.IsAny<string>, Arg.IsAny<string>);
 
   Consumer := TAddUserConsumerController.Create(
-    Logger,
     UseCase,
     Publisher);
 
-  Assert.WillNotRaiseAny(
+  Assert.WillRaise(
     procedure
     begin
       Consumer.Value.Run(
         JSONUnmarshaller.To<IUserCreatedDto>(Format('{"userid": %s, "firstname": "%s", "lastname": "%s"}', [JSONMarshaller.From<TGuid>(UserId) , FirstName, LastName])));
-    end);
+    end,
+    EAddUseCaseFailure);
 
   InsertUserCommand.Received(Times.Once).Execute(UserId.ToString , FirstName, LastName);
   InsertUserCommand.Received(Times.Never).Execute(Arg.IsNotIn<string>([UserId.ToString]), Arg.IsNotIn<string>([FirstName]), Arg.IsNotIn<string>([LastName]));

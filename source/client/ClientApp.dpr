@@ -43,18 +43,18 @@ uses
 {$R *.res}
 
 var
-  Container: Shared<TContainer>;
-  IniFile: Shared<TMemIniFile>;
+  Container: IShared<TContainer>;
+  IniFile: IShared<TMemIniFile>;
 begin
 {$IFDEF DEBUG}
   ReportMemoryLeaksOnShutdown := True;
 {$ENDIF}
-  Container := TContainer.Create;
-  IniFile := TMemIniFile.Create(Utils.Files.GetIniFilename);
+  Container := Shared.Make(TContainer.Create);
+  IniFile := Shared.Make(TMemIniFile.Create(Utils.Files.GetIniFilename));
 
   Application.Initialize;
   ClientApp.DI.Register(Application, Container, IniFile);
-  Container.Value.Resolve<TMainView>;
+  Container.Resolve<TMainView>;
 
   Application.Run;
 end.

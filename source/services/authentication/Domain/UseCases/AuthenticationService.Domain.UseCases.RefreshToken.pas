@@ -29,7 +29,7 @@ type
     TTokenParams = record
     private
       FToken: string;
-      FJWT: Shared<TJwt>;
+      FJWT: IShared<TJwt>;
     public
       constructor Create(const Token: string; const JWT: TJwt);
 
@@ -195,7 +195,7 @@ constructor TRefreshTokenUseCase.TTokenParams.Create(
   const JWT: TJwt);
 begin
   FToken := Token;
-  FJwt := Jwt;
+  FJwt := Shared.Make(Jwt);
 end;
 
 function TRefreshTokenUseCase.TTokenParams.JWT: TJwt;

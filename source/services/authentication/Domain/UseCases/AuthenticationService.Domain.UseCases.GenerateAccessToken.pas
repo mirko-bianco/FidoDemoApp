@@ -32,8 +32,8 @@ type
    private Type
     TJwtTokens = record
     private
-      FAccessToken: Shared<TJwt>;
-      FRefreshToken: Shared<TJwt>;
+      FAccessToken: IShared<TJwt>;
+      FRefreshToken: IShared<TJwt>;
     public
       constructor Create(const AccessToken: TJwt; const RefreshToken: TJwt);
 
@@ -145,8 +145,8 @@ constructor TGenerateAccessTokenUseCase.TJwtTokens.Create(
   const AccessToken: TJwt;
   const RefreshToken: TJwt);
 begin
-  FAccessToken := AccessToken;
-  FRefreshToken := RefreshToken;
+  FAccessToken := Shared.Make(AccessToken);
+  FRefreshToken := Shared.Make(RefreshToken);
 end;
 
 function TGenerateAccessTokenUseCase.TJwtTokens.RefreshToken: TJwt;
